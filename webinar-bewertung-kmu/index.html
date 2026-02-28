@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webinar: Bewertung von KMU - Morgenwert</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --accent-primary: #1e40af;
+    --accent-secondary: #3b82f6;
+    --accent-light: #60a5fa;
+    --accent-orange: #f97316;
+    --accent-orange-light: #fdba74;
+    --bg-color: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --nav-width: 260px;
+    --transition: 0.3s ease;
+}
+html { scroll-behavior: smooth; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary); background: var(--bg-secondary);
+    line-height: 1.6; overflow-x: hidden;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    width: 0%; transition: width 0.3s ease;
+}
+.nav-sidebar {
+    position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
+    background: var(--bg-color); border-right: 1px solid var(--border-color);
+    z-index: 900; display: flex; flex-direction: column;
+    padding: 1.5rem 0; overflow-y: auto;
+    box-shadow: var(--shadow-sm); transition: transform var(--transition);
+}
+.nav-logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem; }
+.nav-logo h2 { font-size: 1rem; font-weight: 700; color: var(--accent-primary); letter-spacing: -0.02em; }
+.nav-logo span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.lang-toggle {
+    display: flex; gap: 0; margin: 0 1.25rem 0.75rem;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+}
+.lang-btn {
+    flex: 1; padding: 0.4rem 0.75rem; border: none; background: var(--bg-color);
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all var(--transition);
+    color: var(--text-secondary); text-align: center;
+}
+.lang-btn.active { background: var(--accent-primary); color: white; }
+.lang-btn:hover:not(.active) { background: var(--bg-tertiary); }
+.nav-items { list-style: none; flex: 1; }
+.nav-items li { margin: 2px 0.5rem; }
+.nav-items a {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 8px;
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 0.82rem; font-weight: 500; transition: all var(--transition);
+}
+.nav-items a:hover { background: var(--bg-tertiary); color: var(--accent-primary); }
+.nav-items a.active { background: rgba(30,64,175,0.08); color: var(--accent-primary); font-weight: 600; }
+.nav-num {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0; transition: all var(--transition);
+}
+.nav-items a.active .nav-num { background: var(--accent-primary); color: white; }
+.menu-toggle {
+    display: none; position: fixed; top: 1rem; left: 1rem; z-index: 950;
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md); cursor: pointer;
+    align-items: center; justify-content: center; transition: all var(--transition);
+}
+.menu-toggle svg { width: 20px; height: 20px; stroke: var(--text-primary); }
+.mobile-lang-toggle {
+    display: none; position: fixed; top: 1rem; right: 1rem; z-index: 950;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+    background: var(--bg-color); box-shadow: var(--shadow-md);
+}
+.mobile-lang-toggle .lang-btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; }
+.main-content { margin-left: var(--nav-width); min-height: 100vh; }
+section {
+    min-height: 100vh; padding: 4rem 3rem;
+    display: flex; align-items: center; justify-content: center;
+}
+section:nth-child(even) { background: var(--bg-color); }
+section:nth-child(odd) { background: var(--bg-secondary); }
+.slide-inner { max-width: 900px; width: 100%; }
+.slide-tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent-primary); background: rgba(30,64,175,0.08);
+    padding: 0.3rem 0.75rem; border-radius: 20px; margin-bottom: 1rem;
+}
+.slide-tag.orange { color: var(--accent-orange); background: rgba(249,115,22,0.1); }
+h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); }
+h1 .accent { color: var(--accent-primary); }
+h2 { font-size: 2rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+h3 { font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; margin-top: 1rem; max-width: 640px; }
+.badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    padding: 0.2rem 0.6rem; border-radius: 12px;
+    background: rgba(249,115,22,0.12); color: var(--accent-orange);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem;
+    box-shadow: var(--shadow-md); transition: all var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+.feature-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; transition: all var(--transition);
+}
+.feature-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); transform: translateY(-2px); }
+.feature-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: var(--accent-primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1rem;
+}
+.feature-icon.orange { background: var(--accent-orange); }
+.feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.feature-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
+.highlight-box {
+    background: linear-gradient(135deg, rgba(30,64,175,0.06), rgba(59,130,246,0.06));
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin-top: 1.5rem;
+}
+.highlight-box.orange {
+    background: linear-gradient(135deg, rgba(249,115,22,0.06), rgba(253,186,116,0.06));
+    border-left-color: var(--accent-orange);
+}
+.highlight-box h4 { color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.35rem; }
+.highlight-box.orange h4 { color: var(--accent-orange); }
+.highlight-box p { font-size: 0.88rem; color: var(--text-secondary); }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.stat-card {
+    text-align: center; padding: 1.25rem 1rem;
+    background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px;
+}
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-primary); }
+.stat-value.orange { color: var(--accent-orange); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 500; }
+.check-list { list-style: none; margin-top: 1rem; }
+.check-list li {
+    padding: 0.5rem 0; padding-left: 1.75rem; position: relative;
+    font-size: 0.92rem; color: var(--text-secondary);
+}
+.check-list li::before {
+    content: '\2713'; position: absolute; left: 0; top: 0.5rem;
+    color: var(--accent-primary); font-weight: 700; font-size: 0.9rem;
+}
+.cta-box {
+    background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+    border-radius: 16px; padding: 2.5rem; color: white; text-align: center; margin-top: 2rem;
+}
+.cta-box h3 { color: white; font-size: 1.4rem; margin-bottom: 0.5rem; }
+.cta-box p { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.cta-btn {
+    display: inline-block; padding: 0.75rem 2rem; border-radius: 10px;
+    background: white; color: var(--accent-primary); font-weight: 700;
+    font-size: 0.95rem; text-decoration: none;
+    transition: all var(--transition); border: none; cursor: pointer;
+}
+.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+@media (max-width: 900px) {
+    .nav-sidebar { transform: translateX(-100%); }
+    .nav-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+    .menu-toggle { display: flex; }
+    .mobile-lang-toggle { display: flex; }
+    .main-content { margin-left: 0; }
+    section { padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    section { padding: 2.5rem 1rem; }
+    h1 { font-size: 1.6rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
+
+<div class="mobile-lang-toggle">
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+</div>
+
+<nav class="nav-sidebar" id="navSidebar" role="navigation">
+  <div class="nav-logo">
+    <h2>Morgenwert</h2>
+    <span data-i18n="nav_subtitle"></span>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+  </div>
+  <ul class="nav-items">
+    <li><a href="#slide-1" class="active"><span class="nav-num">01</span> <span data-i18n="nav1"></span></a></li>
+    <li><a href="#slide-2"><span class="nav-num">02</span> <span data-i18n="nav2"></span></a></li>
+    <li><a href="#slide-3"><span class="nav-num">03</span> <span data-i18n="nav3"></span></a></li>
+    <li><a href="#slide-4"><span class="nav-num">04</span> <span data-i18n="nav4"></span></a></li>
+  </ul>
+</nav>
+
+<main class="main-content">
+
+  <!-- Slide 1: Hero -->
+  <section id="slide-1">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s1_tag"></span>
+      <h1><span class="accent" data-i18n="s1_title_accent"></span> <span data-i18n="s1_title_rest"></span></h1>
+      <p class="subtitle" data-i18n="s1_subtitle"></p>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">~60</div><div class="stat-label" data-i18n="s1_stat1"></div></div>
+        <div class="stat-card"><div class="stat-value orange">Live</div><div class="stat-label" data-i18n="s1_stat2"></div></div>
+        <div class="stat-card"><div class="stat-value">Q&A</div><div class="stat-label" data-i18n="s1_stat3"></div></div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s1_h1_title"></h4>
+        <p data-i18n="s1_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: Was du lernst -->
+  <section id="slide-2">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s2_tag"></span>
+      <h2 data-i18n="s2_title"></h2>
+      <p class="subtitle" data-i18n="s2_subtitle"></p>
+      <div class="feature-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="feature-card">
+          <div class="feature-icon">&#128218;</div>
+          <div class="feature-title" data-i18n="s2_f1_title"></div>
+          <div class="feature-desc" data-i18n="s2_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128200;</div>
+          <div class="feature-title" data-i18n="s2_f2_title"></div>
+          <div class="feature-desc" data-i18n="s2_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128187;</div>
+          <div class="feature-title" data-i18n="s2_f3_title"></div>
+          <div class="feature-desc" data-i18n="s2_f3_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s2_h1_title"></h4>
+        <p data-i18n="s2_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Live Demo -->
+  <section id="slide-3">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s3_tag"></span>
+      <h2 data-i18n="s3_title"></h2>
+      <p class="subtitle" data-i18n="s3_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#128176;</div>
+          <div class="feature-title" data-i18n="s3_f1_title"></div>
+          <div class="feature-desc" data-i18n="s3_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128202;</div>
+          <div class="feature-title" data-i18n="s3_f2_title"></div>
+          <div class="feature-desc" data-i18n="s3_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#127919;</div>
+          <div class="feature-title" data-i18n="s3_f3_title"></div>
+          <div class="feature-desc" data-i18n="s3_f3_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128196;</div>
+          <div class="feature-title" data-i18n="s3_f4_title"></div>
+          <div class="feature-desc" data-i18n="s3_f4_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s3_h1_title"></h4>
+        <p data-i18n="s3_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 4: Anmeldung -->
+  <section id="slide-4">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s4_tag"></span>
+      <h2 data-i18n="s4_title"></h2>
+      <p class="subtitle" data-i18n="s4_subtitle"></p>
+      <div class="feature-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem;">
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon">&#128270;</div>
+          <h3 data-i18n="s4_demo_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n="s4_demo_desc"></p>
+          <a class="cta-btn" style="padding: 0.6rem 1.5rem; font-size: 0.88rem; text-align: center; background: var(--accent-primary); color: white; border-radius: 8px;" href="../bewertung-kmu/" data-i18n="s4_demo_btn"></a>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon orange">&#9993;</div>
+          <h3 data-i18n="s4_contact_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n-html="s4_contact_info"></p>
+        </div>
+      </div>
+      <div class="cta-box">
+        <h3 data-i18n="s4_cta_title"></h3>
+        <p data-i18n="s4_cta_desc"></p>
+        <a class="cta-btn" href="mailto:kontakt@morgenwert.de?subject=Anmeldung%20Webinar%20Bewertung%20KMU" data-i18n="s4_cta_btn"></a>
+      </div>
+      <div class="cta-box" style="padding: 1.25rem 2rem; margin-top: 1rem; background: linear-gradient(135deg, var(--text-secondary), var(--text-primary));">
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;" data-i18n="s4_disc_title"></h3>
+        <p style="margin-bottom: 0; font-size: 0.85rem;" data-i18n="s4_disc_desc"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const translations = {
+  de: {
+    nav_subtitle: 'Webinar: Bewertung von KMU',
+    nav1: 'Willkommen', nav2: 'Was du lernst', nav3: 'Live Demo', nav4: 'Anmeldung',
+    s1_tag: 'Kostenloses Webinar',
+    s1_title_accent: 'Bewertung', s1_title_rest: 'von KMU',
+    s1_subtitle: 'Was ist mein Unternehmen wert? Eine praxisnahe Einf\u00fchrung in die Bewertung kleiner und mittlerer Unternehmen \u2013 mit Live-Demo eines KMU-Bewertungstools. Ein kostenloses Webinar von Morgenwert.',
+    s1_stat1: 'Minuten', s1_stat2: 'Demo', s1_stat3: 'Inklusive',
+    s1_h1_title: '\ud83c\udfaf Praxisnah & verst\u00e4ndlich',
+    s1_h1_desc: 'Keine graue Theorie \u2013 du lernst anhand konkreter Beispiele, wie KMU-Bewertungen in der Praxis funktionieren. Ideal f\u00fcr Unternehmer, Berater und alle, die mit Unternehmenswerten arbeiten.',
+    s2_tag: 'Dein Takeaway',
+    s2_title: 'Was du aus diesem Webinar mitnimmst',
+    s2_subtitle: 'Drei Schwerpunkte, die dir sofort einen echten Mehrwert liefern.',
+    s2_f1_title: 'Einf\u00fchrung in die KMU-Bewertung',
+    s2_f1_desc: 'Was bedeutet Unternehmenswert? Welche Anl\u00e4sse gibt es? Wert vs. Preis \u2013 die wichtigsten Grundlagen kompakt erkl\u00e4rt.',
+    s2_f2_title: 'Die wichtigsten Bewertungstechniken',
+    s2_f2_desc: 'DCF, Multiplikatoren, Ertragswertverfahren \u2013 welche Methode passt wann? Ein \u00dcberblick \u00fcber die g\u00e4ngigsten Verfahren.',
+    s2_f3_title: 'Live-Demo: KMU-Bewertungstool',
+    s2_f3_desc: 'Wir zeigen dir live, wie ein modernes Bewertungstool funktioniert \u2013 von der Dateneingabe bis zum fertigen Ergebnis.',
+    s2_h1_title: '\u2705 Kein Vorwissen n\u00f6tig',
+    s2_h1_desc: 'Dieses Webinar richtet sich an alle, die einen verst\u00e4ndlichen Einstieg in die KMU-Bewertung suchen. Keine Vorkenntnisse in Finanzmathematik oder Bewertungstheorie erforderlich.',
+    s3_tag: 'Live Demo',
+    s3_title: 'Das Bewertungstool in Aktion',
+    s3_subtitle: 'Wir zeigen dir unser KMU-Bewertungstool live \u2013 von der Eingabe der Finanzdaten bis zum fertigen Bewertungsergebnis.',
+    s3_f1_title: 'DCF-Bewertung',
+    s3_f1_desc: 'Discounted Cashflow-Analyse mit flexiblen Annahmen f\u00fcr Wachstum, Margen und Kapitalkosten.',
+    s3_f2_title: 'Szenario-Analyse',
+    s3_f2_desc: 'Best Case, Base Case, Worst Case \u2013 mehrere Szenarien auf einen Blick f\u00fcr eine fundierte Einsch\u00e4tzung.',
+    s3_f3_title: 'Interaktive Eingabe',
+    s3_f3_desc: 'Finanzdaten eingeben, Parameter anpassen und sofort sehen, wie sich der Unternehmenswert ver\u00e4ndert.',
+    s3_f4_title: 'PDF-Report',
+    s3_f4_desc: 'Am Ende steht ein professioneller Bewertungsreport \u2013 fertig zum Teilen mit Gesch\u00e4ftspartnern oder Beratern.',
+    s3_h1_title: '\ud83d\ude80 Schon neugierig?',
+    s3_h1_desc: 'Wirf vorab einen Blick auf die ausf\u00fchrliche \u00dcbersicht unseres Kurzwebinars zur KMU-Bewertung \u2013 mit allen Inhalten und Themenschwerpunkten.',
+    s4_tag: 'Anmeldung',
+    s4_title: 'Jetzt anmelden',
+    s4_subtitle: 'Sichere dir deinen Platz im kostenlosen Webinar und lerne, wie KMU-Bewertungen in der Praxis funktionieren.',
+    s4_demo_title: 'Slides ansehen',
+    s4_demo_desc: 'Schau dir vorab die Slides des Kurzwebinars an \u2013 mit allen Themen und Schwerpunkten im \u00dcberblick.',
+    s4_demo_btn: 'Slides ansehen \u2192',
+    s4_contact_title: 'Kontakt',
+    s4_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6. Stock<br>20097 Hamburg<br><br>Telefon: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobil: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>E-Mail: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s4_cta_title: 'Kostenlos anmelden',
+    s4_cta_desc: 'Schreib uns eine kurze E-Mail mit dem Betreff "Webinar Bewertung KMU" und wir senden dir alle Details.',
+    s4_cta_btn: 'Jetzt anmelden \u2192',
+    s4_disc_title: 'Wir halten Schritt.',
+    s4_disc_desc: 'AI entwickelt sich t\u00e4glich weiter \u2013 und wir mit. Deshalb behalten wir uns kurzfristige \u00c4nderungen oder Schwerpunktverschiebungen vor. Der Inhalt und die Lernziele bleiben selbstverst\u00e4ndlich erhalten.',
+  },
+  en: {
+    nav_subtitle: 'Webinar: SME Valuation',
+    nav1: 'Welcome', nav2: 'What You\'ll Learn', nav3: 'Live Demo', nav4: 'Sign Up',
+    s1_tag: 'Free Webinar',
+    s1_title_accent: 'SME', s1_title_rest: 'Valuation',
+    s1_subtitle: 'What is my company worth? A hands-on introduction to the valuation of small and medium-sized enterprises \u2013 with a live demo of an SME valuation tool. A free webinar by Morgenwert.',
+    s1_stat1: 'Minutes', s1_stat2: 'Demo', s1_stat3: 'Included',
+    s1_h1_title: '\ud83c\udfaf Practical & Accessible',
+    s1_h1_desc: 'No dry theory \u2013 you\'ll learn through real-world examples how SME valuations work in practice. Ideal for entrepreneurs, consultants, and anyone who works with company values.',
+    s2_tag: 'Your Takeaway',
+    s2_title: 'What You\'ll Take Away from This Webinar',
+    s2_subtitle: 'Three key areas that deliver immediate, real value.',
+    s2_f1_title: 'Introduction to SME Valuation',
+    s2_f1_desc: 'What does company value mean? What are the typical occasions? Value vs. price \u2013 the essential fundamentals explained concisely.',
+    s2_f2_title: 'Key Valuation Techniques',
+    s2_f2_desc: 'DCF, multiples, income approach \u2013 which method fits when? An overview of the most common valuation methods.',
+    s2_f3_title: 'Live Demo: SME Valuation Tool',
+    s2_f3_desc: 'We show you live how a modern valuation tool works \u2013 from data entry to the final result.',
+    s2_h1_title: '\u2705 No Prior Knowledge Needed',
+    s2_h1_desc: 'This webinar is for anyone looking for an accessible introduction to SME valuation. No background in financial mathematics or valuation theory required.',
+    s3_tag: 'Live Demo',
+    s3_title: 'The Valuation Tool in Action',
+    s3_subtitle: 'We\'ll show you our SME valuation tool live \u2013 from entering financial data to the final valuation result.',
+    s3_f1_title: 'DCF Valuation',
+    s3_f1_desc: 'Discounted cash flow analysis with flexible assumptions for growth, margins, and cost of capital.',
+    s3_f2_title: 'Scenario Analysis',
+    s3_f2_desc: 'Best case, base case, worst case \u2013 multiple scenarios at a glance for a well-founded assessment.',
+    s3_f3_title: 'Interactive Input',
+    s3_f3_desc: 'Enter financial data, adjust parameters, and immediately see how the company value changes.',
+    s3_f4_title: 'PDF Report',
+    s3_f4_desc: 'The result is a professional valuation report \u2013 ready to share with business partners or advisors.',
+    s3_h1_title: '\ud83d\ude80 Already Curious?',
+    s3_h1_desc: 'Take an early look at the detailed overview of our SME valuation short webinar \u2013 with all topics and focus areas.',
+    s4_tag: 'Sign Up',
+    s4_title: 'Register Now',
+    s4_subtitle: 'Secure your spot in the free webinar and learn how SME valuations work in practice.',
+    s4_demo_title: 'View Slides',
+    s4_demo_desc: 'Preview the slides of the short webinar \u2013 with all topics and focus areas at a glance.',
+    s4_demo_btn: 'View Slides \u2192',
+    s4_contact_title: 'Contact',
+    s4_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6th Floor<br>20097 Hamburg, Germany<br><br>Phone: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobile: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>Email: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s4_cta_title: 'Register for Free',
+    s4_cta_desc: 'Send us a short email with the subject "Webinar SME Valuation" and we\'ll send you all the details.',
+    s4_cta_btn: 'Sign Up Now \u2192',
+    s4_disc_title: 'We Keep Pace.',
+    s4_disc_desc: 'AI evolves every day \u2013 and so do we. That\'s why we reserve the right to make short-term changes or shifts in emphasis. The content and learning objectives will, of course, remain intact.',
+  }
+};
+
+let currentLang = 'de';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setLang('de'));
+
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-items a');
+const progressBar = document.getElementById('progressBar');
+const menuToggle = document.getElementById('menuToggle');
+const navSidebar = document.getElementById('navSidebar');
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+}
+function updateActiveNav() {
+    let current = '';
+    sections.forEach(section => {
+        if (section.getBoundingClientRect().top <= window.innerHeight * 0.4) current = section.id;
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+    });
+}
+window.addEventListener('scroll', () => { updateProgress(); updateActiveNav(); });
+window.addEventListener('load', () => { updateProgress(); updateActiveNav(); });
+menuToggle.addEventListener('click', () => navSidebar.classList.toggle('open'));
+navLinks.forEach(link => link.addEventListener('click', () => navSidebar.classList.remove('open')));
+document.addEventListener('keydown', e => {
+    const ids = Array.from(sections).map(s => s.id);
+    let current = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) current = i; });
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && current < ids.length - 1) {
+        e.preventDefault(); document.getElementById(ids[current + 1]).scrollIntoView({ behavior: 'smooth' });
+    }
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && current > 0) {
+        e.preventDefault(); document.getElementById(ids[current - 1]).scrollIntoView({ behavior: 'smooth' });
+    }
+});
+</script>
+</body>
+</html>
