@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webinar: Python Advanced - Morgenwert</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --accent-primary: #1e40af; --accent-secondary: #3b82f6; --accent-light: #60a5fa;
+    --accent-orange: #f97316; --accent-orange-light: #fdba74;
+    --bg-color: #ffffff; --bg-secondary: #f8fafc; --bg-tertiary: #f1f5f9;
+    --text-primary: #1e293b; --text-secondary: #475569; --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 6px rgba(0,0,0,0.07); --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --nav-width: 260px; --transition: 0.3s ease;
+}
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--text-primary); background: var(--bg-secondary); line-height: 1.6; overflow-x: hidden; }
+.progress-bar { position: fixed; top: 0; left: 0; height: 4px; z-index: 1000; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)); width: 0%; transition: width 0.3s ease; }
+.nav-sidebar { position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh; background: var(--bg-color); border-right: 1px solid var(--border-color); z-index: 900; display: flex; flex-direction: column; padding: 1.5rem 0; overflow-y: auto; box-shadow: var(--shadow-sm); transition: transform var(--transition); }
+.nav-logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem; }
+.nav-logo h2 { font-size: 1rem; font-weight: 700; color: var(--accent-primary); letter-spacing: -0.02em; }
+.nav-logo span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.lang-toggle { display: flex; gap: 0; margin: 0 1.25rem 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+.lang-btn { flex: 1; padding: 0.4rem 0.75rem; border: none; background: var(--bg-color); font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all var(--transition); color: var(--text-secondary); text-align: center; }
+.lang-btn.active { background: var(--accent-primary); color: white; }
+.lang-btn:hover:not(.active) { background: var(--bg-tertiary); }
+.nav-items { list-style: none; flex: 1; }
+.nav-items li { margin: 2px 0.5rem; }
+.nav-items a { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; border-radius: 8px; text-decoration: none; color: var(--text-secondary); font-size: 0.82rem; font-weight: 500; transition: all var(--transition); }
+.nav-items a:hover { background: var(--bg-tertiary); color: var(--accent-primary); }
+.nav-items a.active { background: rgba(30,64,175,0.08); color: var(--accent-primary); font-weight: 600; }
+.nav-num { width: 26px; height: 26px; border-radius: 7px; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; transition: all var(--transition); }
+.nav-items a.active .nav-num { background: var(--accent-primary); color: white; }
+.menu-toggle { display: none; position: fixed; top: 1rem; left: 1rem; z-index: 950; width: 44px; height: 44px; border-radius: 10px; background: var(--bg-color); border: 1px solid var(--border-color); box-shadow: var(--shadow-md); cursor: pointer; align-items: center; justify-content: center; transition: all var(--transition); }
+.menu-toggle svg { width: 20px; height: 20px; stroke: var(--text-primary); }
+.mobile-lang-toggle { display: none; position: fixed; top: 1rem; right: 1rem; z-index: 950; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: var(--bg-color); box-shadow: var(--shadow-md); }
+.mobile-lang-toggle .lang-btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; }
+.main-content { margin-left: var(--nav-width); min-height: 100vh; }
+section { min-height: 100vh; padding: 4rem 3rem; display: flex; align-items: center; justify-content: center; }
+section:nth-child(even) { background: var(--bg-color); }
+section:nth-child(odd) { background: var(--bg-secondary); }
+.slide-inner { max-width: 900px; width: 100%; }
+.slide-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-primary); background: rgba(30,64,175,0.08); padding: 0.3rem 0.75rem; border-radius: 20px; margin-bottom: 1rem; }
+.slide-tag.orange { color: var(--accent-orange); background: rgba(249,115,22,0.1); }
+h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); }
+h1 .accent { color: var(--accent-primary); }
+h2 { font-size: 2rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+h3 { font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; margin-top: 1rem; max-width: 640px; }
+.badge { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 12px; background: rgba(249,115,22,0.12); color: var(--accent-orange); text-transform: uppercase; letter-spacing: 0.05em; }
+.card { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-md); transition: all var(--transition); }
+.card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+.feature-card { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; transition: all var(--transition); }
+.feature-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); transform: translateY(-2px); }
+.feature-icon { width: 48px; height: 48px; border-radius: 10px; background: var(--accent-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 1rem; }
+.feature-icon.orange { background: var(--accent-orange); }
+.feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.feature-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
+.highlight-box { background: linear-gradient(135deg, rgba(30,64,175,0.06), rgba(59,130,246,0.06)); border-left: 4px solid var(--accent-primary); border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin-top: 1.5rem; }
+.highlight-box.orange { background: linear-gradient(135deg, rgba(249,115,22,0.06), rgba(253,186,116,0.06)); border-left-color: var(--accent-orange); }
+.highlight-box h4 { color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.35rem; }
+.highlight-box.orange h4 { color: var(--accent-orange); }
+.highlight-box p { font-size: 0.88rem; color: var(--text-secondary); }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.stat-card { text-align: center; padding: 1.25rem 1rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; }
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-primary); }
+.stat-value.orange { color: var(--accent-orange); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 500; }
+.check-list { list-style: none; margin-top: 1rem; }
+.check-list li { padding: 0.5rem 0; padding-left: 1.75rem; position: relative; font-size: 0.92rem; color: var(--text-secondary); }
+.check-list li::before { content: '\2713'; position: absolute; left: 0; top: 0.5rem; color: var(--accent-primary); font-weight: 700; font-size: 0.9rem; }
+.cta-box { background: linear-gradient(135deg, var(--accent-primary), #2563eb); border-radius: 16px; padding: 2.5rem; color: white; text-align: center; margin-top: 2rem; }
+.cta-box h3 { color: white; font-size: 1.4rem; margin-bottom: 0.5rem; }
+.cta-box p { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.cta-btn { display: inline-block; padding: 0.75rem 2rem; border-radius: 10px; background: white; color: var(--accent-primary); font-weight: 700; font-size: 0.95rem; text-decoration: none; transition: all var(--transition); border: none; cursor: pointer; }
+.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.series-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; }
+.series-card { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; transition: all var(--transition); }
+.series-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.series-card.current { border-color: var(--accent-orange); box-shadow: 0 0 0 2px rgba(249,115,22,0.2); }
+.series-num { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-primary); margin-bottom: 0.25rem; }
+.series-card.current .series-num { color: var(--accent-orange); }
+.series-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.2rem; }
+.series-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+@media (max-width: 900px) {
+    .nav-sidebar { transform: translateX(-100%); } .nav-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+    .menu-toggle { display: flex; } .mobile-lang-toggle { display: flex; } .main-content { margin-left: 0; }
+    section { padding: 3rem 1.5rem; } h1 { font-size: 2rem; } h2 { font-size: 1.5rem; }
+    .feature-grid { grid-template-columns: 1fr; } .series-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) { section { padding: 2.5rem 1rem; } h1 { font-size: 1.6rem; } .series-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<button class="menu-toggle" id="menuToggle" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+<div class="mobile-lang-toggle">
+  <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+</div>
+<nav class="nav-sidebar" id="navSidebar" role="navigation">
+  <div class="nav-logo"><h2>Morgenwert</h2><span data-i18n="nav_subtitle"></span></div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+  <ul class="nav-items">
+    <li><a href="#slide-1" class="active"><span class="nav-num">01</span> <span data-i18n="nav1"></span></a></li>
+    <li><a href="#slide-2"><span class="nav-num">02</span> <span data-i18n="nav2"></span></a></li>
+    <li><a href="#slide-3"><span class="nav-num">03</span> <span data-i18n="nav3"></span></a></li>
+    <li><a href="#slide-4"><span class="nav-num">04</span> <span data-i18n="nav4"></span></a></li>
+    <li><a href="#slide-5"><span class="nav-num">05</span> <span data-i18n="nav5"></span></a></li>
+    <li><a href="#slide-6"><span class="nav-num">06</span> <span data-i18n="nav6"></span></a></li>
+    <li><a href="#slide-7"><span class="nav-num">07</span> <span data-i18n="nav7"></span></a></li>
+  </ul>
+</nav>
+<main class="main-content">
+
+  <section id="slide-1">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s1_tag"></span>
+      <h1>Python <span class="accent">Advanced</span></h1>
+      <p class="subtitle" data-i18n="s1_subtitle"></p>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">~60</div><div class="stat-label" data-i18n="s1_stat1"></div></div>
+        <div class="stat-card"><div class="stat-value orange">Live</div><div class="stat-label" data-i18n="s1_stat2"></div></div>
+        <div class="stat-card"><div class="stat-value">Q&A</div><div class="stat-label" data-i18n="s1_stat3"></div></div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;"><h4 data-i18n="s1_h1_title"></h4><p data-i18n="s1_h1_desc"></p></div>
+    </div>
+  </section>
+
+  <section id="slide-2">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s2_tag"></span>
+      <h2 data-i18n="s2_title"></h2>
+      <p class="subtitle" data-i18n="s2_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="feature-icon">&#128200;</div><div class="feature-title" data-i18n="s2_f1_title"></div><div class="feature-desc" data-i18n="s2_f1_desc"></div></div>
+        <div class="feature-card"><div class="feature-icon orange">&#127922;</div><div class="feature-title" data-i18n="s2_f2_title"></div><div class="feature-desc" data-i18n="s2_f2_desc"></div></div>
+        <div class="feature-card"><div class="feature-icon">&#127919;</div><div class="feature-title" data-i18n="s2_f3_title"></div><div class="feature-desc" data-i18n="s2_f3_desc"></div></div>
+        <div class="feature-card"><div class="feature-icon orange">&#128202;</div><div class="feature-title" data-i18n="s2_f4_title"></div><div class="feature-desc" data-i18n="s2_f4_desc"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="slide-3">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s3_tag"></span>
+      <h2 data-i18n="s3_title"></h2>
+      <p class="subtitle" data-i18n="s3_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="feature-icon">&#128176;</div><div class="feature-title" data-i18n="s3_f1_title"></div><div class="feature-desc" data-i18n="s3_f1_desc"></div></div>
+        <div class="feature-card"><div class="feature-icon orange">&#128101;</div><div class="feature-title" data-i18n="s3_f2_title"></div><div class="feature-desc" data-i18n="s3_f2_desc"></div></div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;"><h4 data-i18n="s3_h1_title"></h4><p data-i18n="s3_h1_desc"></p></div>
+    </div>
+  </section>
+
+  <section id="slide-4">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s4_tag"></span>
+      <h2 data-i18n="s4_title"></h2>
+      <p class="subtitle" data-i18n="s4_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="feature-icon">&#128290;</div><div class="feature-title" data-i18n="s4_f1_title"></div><div class="feature-desc" data-i18n="s4_f1_desc"></div></div>
+        <div class="feature-card"><div class="feature-icon orange">&#128202;</div><div class="feature-title" data-i18n="s4_f2_title"></div><div class="feature-desc" data-i18n="s4_f2_desc"></div></div>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;"><h4 data-i18n="s4_h1_title"></h4><p data-i18n="s4_h1_desc"></p></div>
+    </div>
+  </section>
+
+  <section id="slide-5">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s5_tag"></span>
+      <h2 data-i18n="s5_title"></h2>
+      <p class="subtitle" data-i18n="s5_subtitle"></p>
+      <ul class="check-list" data-i18n-list="s5_items" style="margin-top: 1.5rem;"></ul>
+      <div class="highlight-box" style="margin-top: 1.5rem;"><h4 data-i18n="s5_h1_title"></h4><p data-i18n="s5_h1_desc"></p></div>
+    </div>
+  </section>
+
+  <section id="slide-6">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s6_tag"></span>
+      <h2 data-i18n="s6_title"></h2>
+      <p class="subtitle" data-i18n="s6_subtitle"></p>
+      <ul class="check-list" data-i18n-list="s6_items" style="margin-top: 1.5rem;"></ul>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;"><h4 data-i18n="s6_h1_title"></h4><p data-i18n="s6_h1_desc"></p></div>
+    </div>
+  </section>
+
+  <section id="slide-7">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s7_tag"></span>
+      <h2 data-i18n="s7_title"></h2>
+      <p class="subtitle" data-i18n="s7_subtitle"></p>
+      <div class="series-grid" style="margin-bottom: 1.5rem;">
+        <div class="series-card"><div class="series-num">Webinar 1</div><div class="series-title" data-i18n="s7_w1_title"></div><div class="series-desc" data-i18n="s7_w1_desc"></div></div>
+        <div class="series-card"><div class="series-num">Webinar 2</div><div class="series-title" data-i18n="s7_w2_title"></div><div class="series-desc" data-i18n="s7_w2_desc"></div></div>
+        <div class="series-card current"><div class="series-num">Webinar 3</div><div class="series-title" data-i18n="s7_w3_title"></div><div class="series-desc" data-i18n="s7_w3_desc"></div><span class="badge" style="margin-top: 0.5rem;" data-i18n="s7_w3_badge"></span></div>
+        <div class="series-card"><div class="series-num">Webinar 4</div><div class="series-title" data-i18n="s7_w4_title"></div><div class="series-desc" data-i18n="s7_w4_desc"></div></div>
+      </div>
+      <div class="feature-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon">&#128270;</div>
+          <h3 data-i18n="s7_demo_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n="s7_demo_desc"></p>
+          <a class="cta-btn" style="padding: 0.6rem 1.5rem; font-size: 0.88rem; text-align: center; background: var(--accent-primary); color: white; border-radius: 8px;" href="https://morgenwert-dcf.onrender.com" target="_blank" data-i18n="s7_demo_btn"></a>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon orange">&#9993;</div>
+          <h3 data-i18n="s7_contact_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n-html="s7_contact_info"></p>
+        </div>
+      </div>
+      <div class="cta-box">
+        <h3 data-i18n="s7_cta_title"></h3>
+        <p data-i18n="s7_cta_desc"></p>
+        <a class="cta-btn" href="mailto:kontakt@morgenwert.de?subject=Anmeldung%20Webinar%20Python%20Advanced" data-i18n="s7_cta_btn"></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script>
+const translations = {
+  de: {
+    nav_subtitle: 'Webinar 3: Python Advanced', nav1: 'Willkommen', nav2: 'Analytische Methoden', nav3: 'Regressionsanalyse',
+    nav4: 'Monte Carlo', nav5: 'Live Demo', nav6: 'Was du lernst', nav7: 'Anmeldung',
+    s1_tag: 'Kostenloses Webinar',
+    s1_subtitle: 'Regressionsanalysen, Monte Carlo Simulation und mehr \u2013 analytische Methoden f\u00fcr Financial Analysts und Modeller.',
+    s1_stat1: 'Minuten', s1_stat2: 'Coding', s1_stat3: 'Inklusive',
+    s1_h1_title: '\ud83d\udcca Teil 3 der kostenlosen Webinar-Reihe',
+    s1_h1_desc: 'Dieses Webinar baut auf den Python-Grundlagen auf und zeigt, was mit fortgeschrittenen analytischen Methoden m\u00f6glich ist.',
+    s2_tag: 'Das Potenzial',
+    s2_title: 'Analytische Methoden mit Python',
+    s2_subtitle: 'Excel kann Grundlagen \u2013 Python erschlie\u00dft m\u00e4chtige statistische und analytische Methoden, die in der Bewertungspraxis den Unterschied machen.',
+    s2_f1_title: 'Regressionsanalyse', s2_f1_desc: 'Zusammenh\u00e4nge quantifizieren und Prognosen ableiten \u2013 datenbasiert statt bauchgef\u00fchlgesteuert.',
+    s2_f2_title: 'Monte Carlo Simulation', s2_f2_desc: 'Tausende Szenarien simulieren statt nur Best/Base/Worst Case. Robuste Bandbreiten f\u00fcr deine Bewertung.',
+    s2_f3_title: 'Sensitivit\u00e4tsanalyse', s2_f3_desc: 'Welche Variablen treiben den Wert? Identifiziere die wichtigsten Hebel in deinem Modell.',
+    s2_f4_title: 'Automatisierte Reports', s2_f4_desc: 'Ergebnisse reproduzierbar aufbereiten und visualisieren \u2013 f\u00fcr Pr\u00e4sentationen und Berichte.',
+    s3_tag: 'Deep Dive',
+    s3_title: 'Regressionsanalyse f\u00fcr Analysten',
+    s3_subtitle: 'Statistische Zusammenh\u00e4nge erkennen und f\u00fcr Prognosen nutzen \u2013 mit Python und AI.',
+    s3_f1_title: 'Revenue Forecasting', s3_f1_desc: 'Ums\u00e4tze auf Basis von Markttreibern prognostizieren. Regressionsmodelle liefern fundierte Sch\u00e4tzungen.',
+    s3_f2_title: 'Peer Group Analyse', s3_f2_desc: 'Statistische Vergleiche mit Wettbewerbern und Branchen-Benchmarks \u2013 objektiv und datengest\u00fctzt.',
+    s3_h1_title: '\ud83d\udca1 Von der Intuition zur Evidenz',
+    s3_h1_desc: 'Regressionen machen Zusammenh\u00e4nge messbar. Statt "ich glaube" hei\u00dft es "die Daten zeigen". Ein Paradigmenwechsel f\u00fcr deine Analysen.',
+    s4_tag: 'Deep Dive',
+    s4_title: 'Monte Carlo Simulation',
+    s4_subtitle: 'Nicht nur 3 Szenarien \u2013 sondern 10.000. F\u00fcr belastbare Bandbreiten in deiner Bewertung.',
+    s4_f1_title: 'Verteilungen definieren', s4_f1_desc: 'Input-Parameter als Wahrscheinlichkeitsverteilungen modellieren statt als fixe Punktsch\u00e4tzungen.',
+    s4_f2_title: 'Simulieren & Analysieren', s4_f2_desc: '10.000 Durchl\u00e4ufe simulieren, Ergebnisse als Histogramme und Konfidenzintervalle analysieren.',
+    s4_h1_title: '\ud83c\udfb2 Statt 3 Szenarien: 10.000 Simulationen',
+    s4_h1_desc: 'Monte Carlo gibt dir nicht einen Wert, sondern eine Verteilung. Du verstehst nicht nur das "Was", sondern auch das "Wie wahrscheinlich".',
+    s5_tag: 'Live Demo',
+    s5_title: 'Was wir gemeinsam bauen',
+    s5_subtitle: 'Im Webinar coden wir live \u2013 mit AI-Unterst\u00fctzung. Du siehst, wie analytische Methoden in der Praxis funktionieren.',
+    s5_items: [
+      'Regression auf Finanzdaten durchf\u00fchren',
+      'Monte Carlo Simulation f\u00fcr ein DCF-Modell',
+      'Ergebnisse visualisieren (Histogramme, Scatter Plots)',
+      'Sensitivit\u00e4ts-Tornado-Charts erstellen'
+    ],
+    s5_h1_title: '\ud83e\udd16 AI schreibt den Code \u2013 du fokussierst auf die Analyse',
+    s5_h1_desc: 'Claude hilft beim Erstellen der statistischen Modelle. Du konzentrierst dich auf die Interpretation und die Frage: Was bedeuten die Ergebnisse f\u00fcr meine Bewertung?',
+    s6_tag: 'Dein Takeaway',
+    s6_title: 'Deine Learnings',
+    s6_subtitle: 'Analytische Methoden, die deine Bewertungen auf ein neues Niveau heben.',
+    s6_items: [
+      'Regressionsanalyse mit Python (statsmodels, scikit-learn)',
+      'Monte Carlo Simulation f\u00fcr Bewertungsmodelle',
+      'Sensitivit\u00e4tsanalyse und Tornado-Charts',
+      'Ergebnisse visualisieren (matplotlib, plotly)',
+      'AI-gest\u00fctztes Coding f\u00fcr statistische Methoden',
+      'Praktische Anwendung auf Financial Models'
+    ],
+    s6_h1_title: '\ud83d\udcdd Voraussetzung',
+    s6_h1_desc: 'Grundkenntnisse in Python/Pandas (oder Webinar 2 besucht). Keine Statistik-Vorkenntnisse n\u00f6tig \u2013 wir erkl\u00e4ren alles praxisnah.',
+    s7_tag: 'N\u00e4chste Schritte', s7_title: 'Interesse geweckt?',
+    s7_subtitle: 'Sichere dir deinen Platz und entdecke, was mit analytischen Methoden in Python m\u00f6glich ist.',
+    s7_w1_title: 'Excel & AI', s7_w1_desc: 'AI-Setup, DCF-Template',
+    s7_w2_title: 'Python Basics', s7_w2_desc: 'Excel zu Python, Pandas',
+    s7_w3_title: 'Python Advanced', s7_w3_desc: 'Regression, Monte Carlo', s7_w3_badge: 'Dieses Webinar',
+    s7_w4_title: 'App & Agents', s7_w4_desc: 'Eigene App, AI Agents',
+    s7_demo_title: 'Demo ansehen', s7_demo_desc: 'Unsere KMU-Bewertungsapplikation \u2013 gebaut mit den Methoden aus dem Programm.',
+    s7_demo_btn: 'Demo ansehen \u2192',
+    s7_contact_title: 'Kontakt',
+    s7_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6. Stock<br>20097 Hamburg<br><br>Telefon: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobil: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>E-Mail: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s7_cta_title: 'Kostenlos anmelden',
+    s7_cta_desc: 'Schreib uns eine kurze E-Mail mit dem Betreff "Webinar Python Advanced" und wir senden dir alle Details.',
+    s7_cta_btn: 'Jetzt anmelden \u2192',
+  },
+  en: {
+    nav_subtitle: 'Webinar 3: Python Advanced', nav1: 'Welcome', nav2: 'Analytical Methods', nav3: 'Regression Analysis',
+    nav4: 'Monte Carlo', nav5: 'Live Demo', nav6: "What You'll Learn", nav7: 'Sign Up',
+    s1_tag: 'Free Webinar',
+    s1_subtitle: 'Regression analysis, Monte Carlo simulation and more \u2013 analytical methods for financial analysts and modellers.',
+    s1_stat1: 'Minutes', s1_stat2: 'Coding', s1_stat3: 'Included',
+    s1_h1_title: '\ud83d\udcca Part 3 of the Free Webinar Series',
+    s1_h1_desc: 'This webinar builds on the Python basics and shows what advanced analytical methods make possible.',
+    s2_tag: 'The Potential',
+    s2_title: 'Analytical Methods with Python',
+    s2_subtitle: 'Excel can do the basics \u2013 Python unlocks powerful statistical and analytical methods that make the difference in valuation practice.',
+    s2_f1_title: 'Regression Analysis', s2_f1_desc: 'Quantify relationships and derive forecasts \u2013 data-driven instead of gut-feeling.',
+    s2_f2_title: 'Monte Carlo Simulation', s2_f2_desc: 'Simulate thousands of scenarios instead of just Best/Base/Worst Case. Robust ranges for your valuation.',
+    s2_f3_title: 'Sensitivity Analysis', s2_f3_desc: 'Which variables drive value? Identify the key levers in your model.',
+    s2_f4_title: 'Automated Reporting', s2_f4_desc: 'Prepare and visualize results reproducibly \u2013 for presentations and reports.',
+    s3_tag: 'Deep Dive',
+    s3_title: 'Regression Analysis for Analysts',
+    s3_subtitle: 'Identify statistical relationships and use them for forecasts \u2013 with Python and AI.',
+    s3_f1_title: 'Revenue Forecasting', s3_f1_desc: 'Forecast revenues based on market drivers. Regression models provide well-founded estimates.',
+    s3_f2_title: 'Peer Group Analysis', s3_f2_desc: 'Statistical comparisons with competitors and industry benchmarks \u2013 objective and data-driven.',
+    s3_h1_title: '\ud83d\udca1 From Intuition to Evidence',
+    s3_h1_desc: 'Regressions make relationships measurable. Instead of "I believe", it\'s "the data shows". A paradigm shift for your analyses.',
+    s4_tag: 'Deep Dive',
+    s4_title: 'Monte Carlo Simulation',
+    s4_subtitle: 'Not just 3 scenarios \u2013 but 10,000. For robust ranges in your valuation.',
+    s4_f1_title: 'Define Distributions', s4_f1_desc: 'Model input parameters as probability distributions instead of fixed point estimates.',
+    s4_f2_title: 'Simulate & Analyze', s4_f2_desc: 'Run 10,000 simulations, analyze results as histograms and confidence intervals.',
+    s4_h1_title: '\ud83c\udfb2 Instead of 3 Scenarios: 10,000 Simulations',
+    s4_h1_desc: 'Monte Carlo gives you not a single value, but a distribution. You understand not just the "what", but also the "how likely".',
+    s5_tag: 'Live Demo',
+    s5_title: "What We'll Build Together",
+    s5_subtitle: "We'll code live in the webinar \u2013 with AI support. See how analytical methods work in practice.",
+    s5_items: [
+      'Run regression on financial data',
+      'Monte Carlo simulation for a DCF model',
+      'Visualize results (histograms, scatter plots)',
+      'Create sensitivity tornado charts'
+    ],
+    s5_h1_title: '\ud83e\udd16 AI Writes the Code \u2013 You Focus on Analysis',
+    s5_h1_desc: 'Claude helps create the statistical models. You focus on interpretation: What do the results mean for my valuation?',
+    s6_tag: 'Your Takeaway',
+    s6_title: 'Your Takeaways',
+    s6_subtitle: 'Analytical methods that take your valuations to the next level.',
+    s6_items: [
+      'Regression analysis with Python (statsmodels, scikit-learn)',
+      'Monte Carlo simulation for valuation models',
+      'Sensitivity analysis and tornado charts',
+      'Visualize results (matplotlib, plotly)',
+      'AI-powered coding for statistical methods',
+      'Practical application to financial models'
+    ],
+    s6_h1_title: '\ud83d\udcdd Prerequisite',
+    s6_h1_desc: 'Basic Python/Pandas knowledge (or attended Webinar 2). No statistics background needed \u2013 we explain everything hands-on.',
+    s7_tag: 'Next Steps', s7_title: 'Interested?',
+    s7_subtitle: 'Secure your spot and discover what analytical methods in Python make possible.',
+    s7_w1_title: 'Excel & AI', s7_w1_desc: 'AI setup, DCF template',
+    s7_w2_title: 'Python Basics', s7_w2_desc: 'Excel to Python, Pandas',
+    s7_w3_title: 'Python Advanced', s7_w3_desc: 'Regression, Monte Carlo', s7_w3_badge: 'This Webinar',
+    s7_w4_title: 'App & Agents', s7_w4_desc: 'Build your app, AI agents',
+    s7_demo_title: 'View Demo', s7_demo_desc: 'Our SME valuation application \u2013 built with the methods from the program.',
+    s7_demo_btn: 'View Demo \u2192',
+    s7_contact_title: 'Contact',
+    s7_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6th Floor<br>20097 Hamburg, Germany<br><br>Phone: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobile: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>Email: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s7_cta_title: 'Register for Free',
+    s7_cta_desc: 'Send us a short email with the subject "Webinar Python Advanced" and we\'ll send you all the details.',
+    s7_cta_btn: 'Sign Up Now \u2192',
+  }
+};
+let currentLang = 'de';
+function setLang(lang) {
+  currentLang = lang; document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (translations[lang][k] !== undefined) el.textContent = translations[lang][k]; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { const k = el.getAttribute('data-i18n-html'); if (translations[lang][k] !== undefined) el.innerHTML = translations[lang][k]; });
+  document.querySelectorAll('[data-i18n-list]').forEach(ul => { const k = ul.getAttribute('data-i18n-list'); if (translations[lang][k] !== undefined) ul.innerHTML = translations[lang][k].map(i => '<li>' + i + '</li>').join(''); });
+}
+document.addEventListener('DOMContentLoaded', () => setLang('de'));
+const sections = document.querySelectorAll('section'), navLinks = document.querySelectorAll('.nav-items a'), progressBar = document.getElementById('progressBar'), menuToggle = document.getElementById('menuToggle'), navSidebar = document.getElementById('navSidebar');
+function updateProgress() { const s = window.scrollY, d = document.documentElement.scrollHeight - window.innerHeight; progressBar.style.width = (d > 0 ? (s / d) * 100 : 0) + '%'; }
+function updateActiveNav() { let c = ''; sections.forEach(s => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) c = s.id; }); navLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + c) l.classList.add('active'); }); }
+window.addEventListener('scroll', () => { updateProgress(); updateActiveNav(); });
+window.addEventListener('load', () => { updateProgress(); updateActiveNav(); });
+menuToggle.addEventListener('click', () => navSidebar.classList.toggle('open'));
+navLinks.forEach(l => l.addEventListener('click', () => navSidebar.classList.remove('open')));
+document.addEventListener('keydown', e => {
+    const ids = Array.from(sections).map(s => s.id); let c = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) c = i; });
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && c < ids.length - 1) { e.preventDefault(); document.getElementById(ids[c + 1]).scrollIntoView({ behavior: 'smooth' }); }
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && c > 0) { e.preventDefault(); document.getElementById(ids[c - 1]).scrollIntoView({ behavior: 'smooth' }); }
+});
+</script>
+</body>
+</html>

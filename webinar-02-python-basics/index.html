@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webinar: Python Basics mit AI - Morgenwert</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --accent-primary: #1e40af;
+    --accent-secondary: #3b82f6;
+    --accent-light: #60a5fa;
+    --accent-orange: #f97316;
+    --accent-orange-light: #fdba74;
+    --bg-color: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --nav-width: 260px;
+    --transition: 0.3s ease;
+}
+html { scroll-behavior: smooth; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary); background: var(--bg-secondary);
+    line-height: 1.6; overflow-x: hidden;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    width: 0%; transition: width 0.3s ease;
+}
+.nav-sidebar {
+    position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
+    background: var(--bg-color); border-right: 1px solid var(--border-color);
+    z-index: 900; display: flex; flex-direction: column;
+    padding: 1.5rem 0; overflow-y: auto;
+    box-shadow: var(--shadow-sm); transition: transform var(--transition);
+}
+.nav-logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem; }
+.nav-logo h2 { font-size: 1rem; font-weight: 700; color: var(--accent-primary); letter-spacing: -0.02em; }
+.nav-logo span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.lang-toggle {
+    display: flex; gap: 0; margin: 0 1.25rem 0.75rem;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+}
+.lang-btn {
+    flex: 1; padding: 0.4rem 0.75rem; border: none; background: var(--bg-color);
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all var(--transition);
+    color: var(--text-secondary); text-align: center;
+}
+.lang-btn.active { background: var(--accent-primary); color: white; }
+.lang-btn:hover:not(.active) { background: var(--bg-tertiary); }
+.nav-items { list-style: none; flex: 1; }
+.nav-items li { margin: 2px 0.5rem; }
+.nav-items a {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 8px;
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 0.82rem; font-weight: 500; transition: all var(--transition);
+}
+.nav-items a:hover { background: var(--bg-tertiary); color: var(--accent-primary); }
+.nav-items a.active { background: rgba(30,64,175,0.08); color: var(--accent-primary); font-weight: 600; }
+.nav-num {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0; transition: all var(--transition);
+}
+.nav-items a.active .nav-num { background: var(--accent-primary); color: white; }
+.menu-toggle {
+    display: none; position: fixed; top: 1rem; left: 1rem; z-index: 950;
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md); cursor: pointer;
+    align-items: center; justify-content: center; transition: all var(--transition);
+}
+.menu-toggle svg { width: 20px; height: 20px; stroke: var(--text-primary); }
+.mobile-lang-toggle {
+    display: none; position: fixed; top: 1rem; right: 1rem; z-index: 950;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+    background: var(--bg-color); box-shadow: var(--shadow-md);
+}
+.mobile-lang-toggle .lang-btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; }
+.main-content { margin-left: var(--nav-width); min-height: 100vh; }
+section {
+    min-height: 100vh; padding: 4rem 3rem;
+    display: flex; align-items: center; justify-content: center;
+}
+section:nth-child(even) { background: var(--bg-color); }
+section:nth-child(odd) { background: var(--bg-secondary); }
+.slide-inner { max-width: 900px; width: 100%; }
+.slide-tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent-primary); background: rgba(30,64,175,0.08);
+    padding: 0.3rem 0.75rem; border-radius: 20px; margin-bottom: 1rem;
+}
+.slide-tag.orange { color: var(--accent-orange); background: rgba(249,115,22,0.1); }
+h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); }
+h1 .accent { color: var(--accent-primary); }
+h2 { font-size: 2rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+h3 { font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; margin-top: 1rem; max-width: 640px; }
+.badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    padding: 0.2rem 0.6rem; border-radius: 12px;
+    background: rgba(249,115,22,0.12); color: var(--accent-orange);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.badge.alt { background: rgba(30,64,175,0.1); color: var(--accent-primary); }
+.card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem;
+    box-shadow: var(--shadow-md); transition: all var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+.feature-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; transition: all var(--transition);
+}
+.feature-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); transform: translateY(-2px); }
+.feature-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: var(--accent-primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1rem;
+}
+.feature-icon.orange { background: var(--accent-orange); }
+.feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.feature-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
+.highlight-box {
+    background: linear-gradient(135deg, rgba(30,64,175,0.06), rgba(59,130,246,0.06));
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin-top: 1.5rem;
+}
+.highlight-box.orange {
+    background: linear-gradient(135deg, rgba(249,115,22,0.06), rgba(253,186,116,0.06));
+    border-left-color: var(--accent-orange);
+}
+.highlight-box h4 { color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.35rem; }
+.highlight-box.orange h4 { color: var(--accent-orange); }
+.highlight-box p { font-size: 0.88rem; color: var(--text-secondary); }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.stat-card {
+    text-align: center; padding: 1.25rem 1rem;
+    background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px;
+}
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-primary); }
+.stat-value.orange { color: var(--accent-orange); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 500; }
+.check-list { list-style: none; margin-top: 1rem; }
+.check-list li {
+    padding: 0.5rem 0; padding-left: 1.75rem; position: relative;
+    font-size: 0.92rem; color: var(--text-secondary);
+}
+.check-list li::before {
+    content: '\2713'; position: absolute; left: 0; top: 0.5rem;
+    color: var(--accent-primary); font-weight: 700; font-size: 0.9rem;
+}
+.cta-box {
+    background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+    border-radius: 16px; padding: 2.5rem; color: white; text-align: center; margin-top: 2rem;
+}
+.cta-box h3 { color: white; font-size: 1.4rem; margin-bottom: 0.5rem; }
+.cta-box p { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.cta-btn {
+    display: inline-block; padding: 0.75rem 2rem; border-radius: 10px;
+    background: white; color: var(--accent-primary); font-weight: 700;
+    font-size: 0.95rem; text-decoration: none;
+    transition: all var(--transition); border: none; cursor: pointer;
+}
+.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.bridge-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.75rem; margin-top: 1.5rem; align-items: center; }
+.bridge-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1rem 1.25rem; text-align: center;
+}
+.bridge-card.left { border-color: var(--accent-secondary); }
+.bridge-card.right { border-color: var(--accent-orange); }
+.bridge-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+.bridge-card.left .bridge-label { color: var(--accent-primary); }
+.bridge-card.right .bridge-label { color: var(--accent-orange); }
+.bridge-value { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+.bridge-arrow { font-size: 1.5rem; color: var(--accent-primary); font-weight: 800; text-align: center; }
+.series-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; }
+.series-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.25rem; transition: all var(--transition);
+}
+.series-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.series-card.current { border-color: var(--accent-orange); box-shadow: 0 0 0 2px rgba(249,115,22,0.2); }
+.series-num { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-primary); margin-bottom: 0.25rem; }
+.series-card.current .series-num { color: var(--accent-orange); }
+.series-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.2rem; }
+.series-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+@media (max-width: 900px) {
+    .nav-sidebar { transform: translateX(-100%); }
+    .nav-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+    .menu-toggle { display: flex; }
+    .mobile-lang-toggle { display: flex; }
+    .main-content { margin-left: 0; }
+    section { padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+    .bridge-grid { grid-template-columns: 1fr; }
+    .bridge-arrow { transform: rotate(90deg); }
+    .series-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    section { padding: 2.5rem 1rem; }
+    h1 { font-size: 1.6rem; }
+    .series-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
+
+<div class="mobile-lang-toggle">
+  <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+</div>
+
+<nav class="nav-sidebar" id="navSidebar" role="navigation">
+  <div class="nav-logo">
+    <h2>Morgenwert</h2>
+    <span data-i18n="nav_subtitle"></span>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+  <ul class="nav-items">
+    <li><a href="#slide-1" class="active"><span class="nav-num">01</span> <span data-i18n="nav1"></span></a></li>
+    <li><a href="#slide-2"><span class="nav-num">02</span> <span data-i18n="nav2"></span></a></li>
+    <li><a href="#slide-3"><span class="nav-num">03</span> <span data-i18n="nav3"></span></a></li>
+    <li><a href="#slide-4"><span class="nav-num">04</span> <span data-i18n="nav4"></span></a></li>
+    <li><a href="#slide-5"><span class="nav-num">05</span> <span data-i18n="nav5"></span></a></li>
+    <li><a href="#slide-6"><span class="nav-num">06</span> <span data-i18n="nav6"></span></a></li>
+    <li><a href="#slide-7"><span class="nav-num">07</span> <span data-i18n="nav7"></span></a></li>
+  </ul>
+</nav>
+
+<main class="main-content">
+
+  <!-- Slide 1: Title -->
+  <section id="slide-1">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s1_tag"></span>
+      <h1>Python Basics<br><span class="accent">mit AI</span></h1>
+      <p class="subtitle" data-i18n="s1_subtitle"></p>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">~60</div><div class="stat-label" data-i18n="s1_stat1"></div></div>
+        <div class="stat-card"><div class="stat-value orange">Live</div><div class="stat-label" data-i18n="s1_stat2"></div></div>
+        <div class="stat-card"><div class="stat-value">Q&A</div><div class="stat-label" data-i18n="s1_stat3"></div></div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s1_h1_title"></h4>
+        <p data-i18n="s1_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: Warum Python -->
+  <section id="slide-2">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s2_tag"></span>
+      <h2 data-i18n="s2_title"></h2>
+      <p class="subtitle" data-i18n="s2_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#128200;</div>
+          <div class="feature-title" data-i18n="s2_f1_title"></div>
+          <div class="feature-desc" data-i18n="s2_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128260;</div>
+          <div class="feature-title" data-i18n="s2_f2_title"></div>
+          <div class="feature-desc" data-i18n="s2_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9881;</div>
+          <div class="feature-title" data-i18n="s2_f3_title"></div>
+          <div class="feature-desc" data-i18n="s2_f3_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128640;</div>
+          <div class="feature-title" data-i18n="s2_f4_title"></div>
+          <div class="feature-desc" data-i18n="s2_f4_desc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Excel -> Python Bridge -->
+  <section id="slide-3">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s3_tag"></span>
+      <h2 data-i18n="s3_title"></h2>
+      <p class="subtitle" data-i18n="s3_subtitle"></p>
+      <div class="bridge-grid">
+        <div class="bridge-card left">
+          <div class="bridge-label">Excel</div>
+          <div class="bridge-value" data-i18n="s3_b1_left"></div>
+        </div>
+        <div class="bridge-arrow">&rarr;</div>
+        <div class="bridge-card right">
+          <div class="bridge-label">Python</div>
+          <div class="bridge-value">Pandas DataFrame</div>
+        </div>
+      </div>
+      <div class="bridge-grid">
+        <div class="bridge-card left">
+          <div class="bridge-label">Excel</div>
+          <div class="bridge-value">VLOOKUP / INDEX</div>
+        </div>
+        <div class="bridge-arrow">&rarr;</div>
+        <div class="bridge-card right">
+          <div class="bridge-label">Python</div>
+          <div class="bridge-value">.merge() / .loc[]</div>
+        </div>
+      </div>
+      <div class="bridge-grid">
+        <div class="bridge-card left">
+          <div class="bridge-label">Excel</div>
+          <div class="bridge-value">Pivot Table</div>
+        </div>
+        <div class="bridge-arrow">&rarr;</div>
+        <div class="bridge-card right">
+          <div class="bridge-label">Python</div>
+          <div class="bridge-value">.groupby() / .pivot_table()</div>
+        </div>
+      </div>
+      <div class="bridge-grid">
+        <div class="bridge-card left">
+          <div class="bridge-label">Excel</div>
+          <div class="bridge-value" data-i18n="s3_b4_left"></div>
+        </div>
+        <div class="bridge-arrow">&rarr;</div>
+        <div class="bridge-card right">
+          <div class="bridge-label">Python</div>
+          <div class="bridge-value" data-i18n="s3_b4_right"></div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s3_h1_title"></h4>
+        <p data-i18n="s3_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 4: Live Demo Preview -->
+  <section id="slide-4">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s4_tag"></span>
+      <h2 data-i18n="s4_title"></h2>
+      <p class="subtitle" data-i18n="s4_subtitle"></p>
+      <ul class="check-list" data-i18n-list="s4_items" style="margin-top: 1.5rem;"></ul>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s4_h1_title"></h4>
+        <p data-i18n="s4_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5: Was du lernst -->
+  <section id="slide-5">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s5_tag"></span>
+      <h2 data-i18n="s5_title"></h2>
+      <p class="subtitle" data-i18n="s5_subtitle"></p>
+      <ul class="check-list" data-i18n-list="s5_items" style="margin-top: 1.5rem;"></ul>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s5_h1_title"></h4>
+        <p data-i18n="s5_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6: Webinar-Reihe -->
+  <section id="slide-6">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s6_tag"></span>
+      <h2 data-i18n="s6_title"></h2>
+      <p class="subtitle" data-i18n="s6_subtitle"></p>
+      <div class="series-grid">
+        <div class="series-card">
+          <div class="series-num">Webinar 1</div>
+          <div class="series-title" data-i18n="s6_w1_title"></div>
+          <div class="series-desc" data-i18n="s6_w1_desc"></div>
+        </div>
+        <div class="series-card current">
+          <div class="series-num">Webinar 2</div>
+          <div class="series-title" data-i18n="s6_w2_title"></div>
+          <div class="series-desc" data-i18n="s6_w2_desc"></div>
+          <span class="badge" style="margin-top: 0.5rem;" data-i18n="s6_w2_badge"></span>
+        </div>
+        <div class="series-card">
+          <div class="series-num">Webinar 3</div>
+          <div class="series-title" data-i18n="s6_w3_title"></div>
+          <div class="series-desc" data-i18n="s6_w3_desc"></div>
+        </div>
+        <div class="series-card">
+          <div class="series-num">Webinar 4</div>
+          <div class="series-title" data-i18n="s6_w4_title"></div>
+          <div class="series-desc" data-i18n="s6_w4_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s6_h1_title"></h4>
+        <p data-i18n="s6_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 7: Anmeldung & Kontakt -->
+  <section id="slide-7">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s7_tag"></span>
+      <h2 data-i18n="s7_title"></h2>
+      <p class="subtitle" data-i18n="s7_subtitle"></p>
+      <div class="feature-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem;">
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon">&#128270;</div>
+          <h3 data-i18n="s7_demo_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n="s7_demo_desc"></p>
+          <a class="cta-btn" style="padding: 0.6rem 1.5rem; font-size: 0.88rem; text-align: center; background: var(--accent-primary); color: white; border-radius: 8px;" href="https://morgenwert-dcf.onrender.com" target="_blank" data-i18n="s7_demo_btn"></a>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon orange">&#9993;</div>
+          <h3 data-i18n="s7_contact_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n-html="s7_contact_info"></p>
+        </div>
+      </div>
+      <div class="cta-box">
+        <h3 data-i18n="s7_cta_title"></h3>
+        <p data-i18n="s7_cta_desc"></p>
+        <a class="cta-btn" href="mailto:kontakt@morgenwert.de?subject=Anmeldung%20Webinar%20Python%20Basics" data-i18n="s7_cta_btn"></a>
+      </div>
+      <div class="cta-box" style="padding: 1.25rem 2rem; margin-top: 1rem; background: linear-gradient(135deg, var(--text-secondary), var(--text-primary));">
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;" data-i18n="s7_disc_title"></h3>
+        <p style="margin-bottom: 0; font-size: 0.85rem;" data-i18n="s7_disc_desc"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const translations = {
+  de: {
+    nav_subtitle: 'Webinar 2: Python Basics',
+    nav1: 'Willkommen', nav2: 'Warum Python?', nav3: 'Die Br\u00fccke',
+    nav4: 'Live Demo', nav5: 'Was du lernst', nav6: 'Webinar-Reihe', nav7: 'Anmeldung',
+    s1_tag: 'Kostenloses Webinar',
+    s1_subtitle: 'Der sanfte \u00dcbergang von Excel zu Python \u2013 f\u00fcr Financial Analysts und Modeller. Mit AI als Coding-Assistent.',
+    s1_stat1: 'Minuten', s1_stat2: 'Coding', s1_stat3: 'Inklusive',
+    s1_h1_title: '\ud83d\udc0d Teil 2 der kostenlosen Webinar-Reihe',
+    s1_h1_desc: 'Dieses Webinar baut auf Webinar 1 (Excel & AI) auf und zeigt dir den Br\u00fcckenschlag von Excel zu Python. Kein Vorwissen in Python n\u00f6tig.',
+    s2_tag: 'Warum Python?',
+    s2_title: 'Excel ist gut \u2013 Python macht mehr m\u00f6glich',
+    s2_subtitle: 'Python ersetzt Excel nicht. Es erweitert, was du tun kannst \u2013 Skalierbarkeit, Automatisierung und Reproduzierbarkeit inklusive.',
+    s2_f1_title: 'Skalierbarkeit',
+    s2_f1_desc: 'Tausende Datens\u00e4tze verarbeiten, nicht nur einen. Gro\u00dfe Datenmengen, die Excel an seine Grenzen bringen.',
+    s2_f2_title: 'Reproduzierbarkeit',
+    s2_f2_desc: 'Scripts statt manueller Schritte. Jede Analyse ist nachvollziehbar und wiederholbar.',
+    s2_f3_title: 'Automatisierung',
+    s2_f3_desc: 'Wiederkehrende Analysen auf Autopilot. Was du einmal gebaut hast, l\u00e4uft immer wieder.',
+    s2_f4_title: 'Erweiterbar',
+    s2_f4_desc: 'Libraries f\u00fcr alles: Statistik, Visualisierung, Machine Learning. Ein \u00d6kosystem ohne Grenzen.',
+    s3_tag: 'Die Br\u00fccke',
+    s3_title: 'Excel \u2192 Python: Du kennst die Konzepte schon',
+    s3_subtitle: 'Du musst nicht bei Null anfangen. Wir \u00fcbersetzen Konzepte, die du bereits kennst, direkt in Python.',
+    s3_b1_left: 'Tabelle / Tabellenblatt',
+    s3_b4_left: 'Formeln / Funktionen',
+    s3_b4_right: 'def funktionen()',
+    s3_h1_title: '\ud83d\udca1 Kein Python-Kurs von Null',
+    s3_h1_desc: 'Wir starten nicht bei "Hello World" \u2013 wir \u00fcbersetzen Excel-Konzepte, mit denen du schon vertraut bist, direkt in Python. Der schnellste Weg f\u00fcr Financial Analysts.',
+    s4_tag: 'Live Demo',
+    s4_title: 'Was wir gemeinsam coden',
+    s4_subtitle: 'Im Webinar coden wir zusammen \u2013 mit AI als Assistent. Du siehst live, wie Python Finanzdaten verarbeitet.',
+    s4_items: [
+      'Eine Excel-Datei in Python laden (pd.read_excel)',
+      'Finanzdaten bereinigen und transformieren',
+      'Grundlegende Berechnungen mit Pandas',
+      'DCF-Grundlagen: Discounted Cashflows in Python berechnen',
+      'Ergebnisse als neues Excel-File exportieren'
+    ],
+    s4_h1_title: '\ud83e\udd16 AI schreibt den Code mit dir',
+    s4_h1_desc: 'Du musst nicht jede Zeile auswendig k\u00f6nnen. Claude hilft beim Schreiben, Debuggen und Erkl\u00e4ren. Du fokussierst dich auf die Analyse \u2013 AI unterst\u00fctzt beim Code.',
+    s5_tag: 'Dein Takeaway',
+    s5_title: 'Was du aus diesem Webinar mitnimmst',
+    s5_subtitle: 'Von Null auf produktiv: Die wichtigsten Python-Skills f\u00fcr deinen Analysten-Alltag.',
+    s5_items: [
+      'Python & Pandas Grundlagen f\u00fcr Finanzanalysten',
+      'Excel-Daten in Python laden und verarbeiten',
+      'DataFrames verstehen und nutzen',
+      'Erste Berechnungen: DCF-Bewertung in Python',
+      'AI als Coding-Assistent einsetzen',
+      'Excel-Formeln \u2192 Python-Funktionen \u00fcbersetzen'
+    ],
+    s5_h1_title: '\ud83d\udcdd Voraussetzung',
+    s5_h1_desc: 'Grundkenntnisse in Excel. Python-Vorkenntnisse sind NICHT n\u00f6tig \u2013 wir starten gemeinsam. Laptop mitbringen reicht.',
+    s6_tag: 'Webinar-Reihe',
+    s6_title: 'Die 4-teilige Webinar-Reihe',
+    s6_subtitle: 'Jedes Webinar gibt dir einen Vorgeschmack auf das vollst\u00e4ndige 8-Wochen AI Analyst Program.',
+    s6_w1_title: 'Excel & AI', s6_w1_desc: 'AI-Setup, DCF-Template, Best Practices',
+    s6_w2_title: 'Python Basics mit AI', s6_w2_desc: 'Von Excel zu Python, Pandas, DataFrames, DCF', s6_w2_badge: 'Dieses Webinar',
+    s6_w3_title: 'Python Advanced', s6_w3_desc: 'Regressionsanalyse, Monte Carlo, Sensitivit\u00e4tsanalyse',
+    s6_w4_title: 'Applikation & Agents', s6_w4_desc: 'Eigene App bauen, Deployment, AI Agents',
+    s6_h1_title: '\ud83d\ude80 Vom Webinar zum vollst\u00e4ndigen Programm',
+    s6_h1_desc: 'Die Webinar-Reihe gibt dir einen Vorgeschmack. Das vollst\u00e4ndige 8-Wochen AI Analyst Program geht in die Tiefe \u2013 mit pers\u00f6nlicher Betreuung und Kohortenformat.',
+    s7_tag: 'Anmeldung',
+    s7_title: 'Jetzt anmelden',
+    s7_subtitle: 'Sichere dir deinen Platz und erlebe den Br\u00fcckenschlag von Excel zu Python live.',
+    s7_demo_title: 'Demo ansehen',
+    s7_demo_desc: 'Unsere KMU-Bewertungsapplikation \u2013 gebaut mit genau den Methoden, die wir im Programm lehren.',
+    s7_demo_btn: 'Demo ansehen \u2192',
+    s7_contact_title: 'Kontakt',
+    s7_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6. Stock<br>20097 Hamburg<br><br>Telefon: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobil: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>E-Mail: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s7_cta_title: 'Kostenlos anmelden',
+    s7_cta_desc: 'Schreib uns eine kurze E-Mail mit dem Betreff "Webinar Python Basics" und wir senden dir alle Details.',
+    s7_cta_btn: 'Jetzt anmelden \u2192',
+    s7_disc_title: 'Wir halten Schritt.',
+    s7_disc_desc: 'AI entwickelt sich t\u00e4glich weiter \u2013 und wir mit. Kurzfristige \u00c4nderungen vorbehalten. Inhalte und Lernziele bleiben erhalten.',
+  },
+  en: {
+    nav_subtitle: 'Webinar 2: Python Basics',
+    nav1: 'Welcome', nav2: 'Why Python?', nav3: 'The Bridge',
+    nav4: 'Live Demo', nav5: "What You'll Learn", nav6: 'Webinar Series', nav7: 'Sign Up',
+    s1_tag: 'Free Webinar',
+    s1_subtitle: 'The smooth transition from Excel to Python \u2013 for financial analysts and modellers. With AI as your coding assistant.',
+    s1_stat1: 'Minutes', s1_stat2: 'Coding', s1_stat3: 'Included',
+    s1_h1_title: '\ud83d\udc0d Part 2 of the Free Webinar Series',
+    s1_h1_desc: 'This webinar builds on Webinar 1 (Excel & AI) and shows you the bridge from Excel to Python. No prior Python knowledge needed.',
+    s2_tag: 'Why Python?',
+    s2_title: 'Excel is Good \u2013 Python Makes More Possible',
+    s2_subtitle: "Python doesn't replace Excel. It extends what you can do \u2013 scalability, automation, and reproducibility included.",
+    s2_f1_title: 'Scalability',
+    s2_f1_desc: 'Process thousands of datasets, not just one. Large data volumes that push Excel to its limits.',
+    s2_f2_title: 'Reproducibility',
+    s2_f2_desc: 'Scripts instead of manual steps. Every analysis is traceable and repeatable.',
+    s2_f3_title: 'Automation',
+    s2_f3_desc: 'Recurring analyses on autopilot. What you build once runs again and again.',
+    s2_f4_title: 'Extensible',
+    s2_f4_desc: 'Libraries for everything: statistics, visualization, machine learning. An ecosystem without limits.',
+    s3_tag: 'The Bridge',
+    s3_title: 'Excel \u2192 Python: You Already Know the Concepts',
+    s3_subtitle: "You don't need to start from scratch. We translate concepts you already know directly into Python.",
+    s3_b1_left: 'Table / Worksheet',
+    s3_b4_left: 'Formulas / Functions',
+    s3_b4_right: 'def functions()',
+    s3_h1_title: '\ud83d\udca1 Not a Python Course From Scratch',
+    s3_h1_desc: 'We don\'t start at "Hello World" \u2013 we translate Excel concepts you\'re already familiar with directly into Python. The fastest path for financial analysts.',
+    s4_tag: 'Live Demo',
+    s4_title: "What We'll Code Together",
+    s4_subtitle: "In this webinar, we'll code together \u2013 with AI as assistant. See live how Python processes financial data.",
+    s4_items: [
+      'Load an Excel file into Python (pd.read_excel)',
+      'Clean and transform financial data',
+      'Basic calculations with Pandas',
+      'DCF basics: Calculate discounted cashflows in Python',
+      'Export results as a new Excel file'
+    ],
+    s4_h1_title: '\ud83e\udd16 AI Writes Code With You',
+    s4_h1_desc: "You don't need to memorize every line. Claude helps with writing, debugging, and explaining. You focus on analysis \u2013 AI supports the coding.",
+    s5_tag: 'Your Takeaway',
+    s5_title: "What You'll Take Away from This Webinar",
+    s5_subtitle: 'From zero to productive: The essential Python skills for your daily analyst work.',
+    s5_items: [
+      'Python & Pandas fundamentals for financial analysts',
+      'Loading and processing Excel data in Python',
+      'Understanding and using DataFrames',
+      'First calculations: DCF valuation in Python',
+      'Using AI as a coding assistant',
+      'Translating Excel formulas \u2192 Python functions'
+    ],
+    s5_h1_title: '\ud83d\udcdd Prerequisite',
+    s5_h1_desc: 'Basic Excel knowledge. Python experience is NOT required \u2013 we start together. Just bring your laptop.',
+    s6_tag: 'Webinar Series',
+    s6_title: 'The 4-Part Webinar Series',
+    s6_subtitle: 'Each webinar gives you a taste of the full 8-week AI Analyst Program.',
+    s6_w1_title: 'Excel & AI', s6_w1_desc: 'AI setup, DCF template, best practices',
+    s6_w2_title: 'Python Basics with AI', s6_w2_desc: 'Excel to Python, Pandas, DataFrames, DCF', s6_w2_badge: 'This Webinar',
+    s6_w3_title: 'Python Advanced', s6_w3_desc: 'Regression analysis, Monte Carlo, sensitivity analysis',
+    s6_w4_title: 'Application & Agents', s6_w4_desc: 'Build your own app, deployment, AI agents',
+    s6_h1_title: '\ud83d\ude80 From Webinar Series to Full Program',
+    s6_h1_desc: 'The webinar series gives you a taste. The full 8-week AI Analyst Program goes deep \u2013 with personal mentoring and cohort format.',
+    s7_tag: 'Sign Up',
+    s7_title: 'Register Now',
+    s7_subtitle: 'Secure your spot and experience the bridge from Excel to Python live.',
+    s7_demo_title: 'View Demo',
+    s7_demo_desc: 'Our SME valuation application \u2013 built with exactly the methods we teach in the program.',
+    s7_demo_btn: 'View Demo \u2192',
+    s7_contact_title: 'Contact',
+    s7_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6th Floor<br>20097 Hamburg, Germany<br><br>Phone: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobile: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>Email: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s7_cta_title: 'Register for Free',
+    s7_cta_desc: 'Send us a short email with the subject "Webinar Python Basics" and we\'ll send you all the details.',
+    s7_cta_btn: 'Sign Up Now \u2192',
+    s7_disc_title: 'We Keep Pace.',
+    s7_disc_desc: 'AI evolves every day \u2013 and so do we. Short-term changes reserved. Content and learning objectives remain intact.',
+  }
+};
+
+let currentLang = 'de';
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+  document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (translations[lang][k] !== undefined) el.textContent = translations[lang][k]; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { const k = el.getAttribute('data-i18n-html'); if (translations[lang][k] !== undefined) el.innerHTML = translations[lang][k]; });
+  document.querySelectorAll('[data-i18n-list]').forEach(ul => { const k = ul.getAttribute('data-i18n-list'); if (translations[lang][k] !== undefined) ul.innerHTML = translations[lang][k].map(i => '<li>' + i + '</li>').join(''); });
+}
+document.addEventListener('DOMContentLoaded', () => setLang('de'));
+
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-items a');
+const progressBar = document.getElementById('progressBar');
+const menuToggle = document.getElementById('menuToggle');
+const navSidebar = document.getElementById('navSidebar');
+
+function updateProgress() { const s = window.scrollY; const d = document.documentElement.scrollHeight - window.innerHeight; progressBar.style.width = (d > 0 ? (s / d) * 100 : 0) + '%'; }
+function updateActiveNav() { let c = ''; sections.forEach(s => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) c = s.id; }); navLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + c) l.classList.add('active'); }); }
+window.addEventListener('scroll', () => { updateProgress(); updateActiveNav(); });
+window.addEventListener('load', () => { updateProgress(); updateActiveNav(); });
+menuToggle.addEventListener('click', () => navSidebar.classList.toggle('open'));
+navLinks.forEach(l => l.addEventListener('click', () => navSidebar.classList.remove('open')));
+document.addEventListener('keydown', e => {
+    const ids = Array.from(sections).map(s => s.id); let c = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) c = i; });
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && c < ids.length - 1) { e.preventDefault(); document.getElementById(ids[c + 1]).scrollIntoView({ behavior: 'smooth' }); }
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && c > 0) { e.preventDefault(); document.getElementById(ids[c - 1]).scrollIntoView({ behavior: 'smooth' }); }
+});
+</script>
+</body>
+</html>

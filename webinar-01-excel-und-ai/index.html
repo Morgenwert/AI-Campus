@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webinar: Excel & AI - Morgenwert</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --accent-primary: #1e40af;
+    --accent-secondary: #3b82f6;
+    --accent-light: #60a5fa;
+    --accent-orange: #f97316;
+    --accent-orange-light: #fdba74;
+    --bg-color: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --nav-width: 260px;
+    --transition: 0.3s ease;
+}
+html { scroll-behavior: smooth; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary); background: var(--bg-secondary);
+    line-height: 1.6; overflow-x: hidden;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    width: 0%; transition: width 0.3s ease;
+}
+.nav-sidebar {
+    position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
+    background: var(--bg-color); border-right: 1px solid var(--border-color);
+    z-index: 900; display: flex; flex-direction: column;
+    padding: 1.5rem 0; overflow-y: auto;
+    box-shadow: var(--shadow-sm); transition: transform var(--transition);
+}
+.nav-logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem; }
+.nav-logo h2 { font-size: 1rem; font-weight: 700; color: var(--accent-primary); letter-spacing: -0.02em; }
+.nav-logo span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.lang-toggle {
+    display: flex; gap: 0; margin: 0 1.25rem 0.75rem;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+}
+.lang-btn {
+    flex: 1; padding: 0.4rem 0.75rem; border: none; background: var(--bg-color);
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all var(--transition);
+    color: var(--text-secondary); text-align: center;
+}
+.lang-btn.active { background: var(--accent-primary); color: white; }
+.lang-btn:hover:not(.active) { background: var(--bg-tertiary); }
+.nav-items { list-style: none; flex: 1; }
+.nav-items li { margin: 2px 0.5rem; }
+.nav-items a {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 8px;
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 0.82rem; font-weight: 500; transition: all var(--transition);
+}
+.nav-items a:hover { background: var(--bg-tertiary); color: var(--accent-primary); }
+.nav-items a.active { background: rgba(30,64,175,0.08); color: var(--accent-primary); font-weight: 600; }
+.nav-num {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0; transition: all var(--transition);
+}
+.nav-items a.active .nav-num { background: var(--accent-primary); color: white; }
+.menu-toggle {
+    display: none; position: fixed; top: 1rem; left: 1rem; z-index: 950;
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md); cursor: pointer;
+    align-items: center; justify-content: center; transition: all var(--transition);
+}
+.menu-toggle svg { width: 20px; height: 20px; stroke: var(--text-primary); }
+.mobile-lang-toggle {
+    display: none; position: fixed; top: 1rem; right: 1rem; z-index: 950;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+    background: var(--bg-color); box-shadow: var(--shadow-md);
+}
+.mobile-lang-toggle .lang-btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; }
+.main-content { margin-left: var(--nav-width); min-height: 100vh; }
+section {
+    min-height: 100vh; padding: 4rem 3rem;
+    display: flex; align-items: center; justify-content: center;
+}
+section:nth-child(even) { background: var(--bg-color); }
+section:nth-child(odd) { background: var(--bg-secondary); }
+.slide-inner { max-width: 900px; width: 100%; }
+.slide-tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent-primary); background: rgba(30,64,175,0.08);
+    padding: 0.3rem 0.75rem; border-radius: 20px; margin-bottom: 1rem;
+}
+.slide-tag.orange { color: var(--accent-orange); background: rgba(249,115,22,0.1); }
+h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); }
+h1 .accent { color: var(--accent-primary); }
+h2 { font-size: 2rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+h3 { font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; margin-top: 1rem; max-width: 640px; }
+.badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    padding: 0.2rem 0.6rem; border-radius: 12px;
+    background: rgba(249,115,22,0.12); color: var(--accent-orange);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.badge.alt { background: rgba(30,64,175,0.1); color: var(--accent-primary); }
+.card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem;
+    box-shadow: var(--shadow-md); transition: all var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+.feature-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; transition: all var(--transition);
+}
+.feature-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); transform: translateY(-2px); }
+.feature-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: var(--accent-primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1rem;
+}
+.feature-icon.orange { background: var(--accent-orange); }
+.feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.feature-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
+.highlight-box {
+    background: linear-gradient(135deg, rgba(30,64,175,0.06), rgba(59,130,246,0.06));
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin-top: 1.5rem;
+}
+.highlight-box.orange {
+    background: linear-gradient(135deg, rgba(249,115,22,0.06), rgba(253,186,116,0.06));
+    border-left-color: var(--accent-orange);
+}
+.highlight-box h4 { color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.35rem; }
+.highlight-box.orange h4 { color: var(--accent-orange); }
+.highlight-box p { font-size: 0.88rem; color: var(--text-secondary); }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.stat-card {
+    text-align: center; padding: 1.25rem 1rem;
+    background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px;
+}
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-primary); }
+.stat-value.orange { color: var(--accent-orange); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 500; }
+.check-list { list-style: none; margin-top: 1rem; }
+.check-list li {
+    padding: 0.5rem 0; padding-left: 1.75rem; position: relative;
+    font-size: 0.92rem; color: var(--text-secondary);
+}
+.check-list li::before {
+    content: '\2713'; position: absolute; left: 0; top: 0.5rem;
+    color: var(--accent-primary); font-weight: 700; font-size: 0.9rem;
+}
+.cta-box {
+    background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+    border-radius: 16px; padding: 2.5rem; color: white; text-align: center; margin-top: 2rem;
+}
+.cta-box h3 { color: white; font-size: 1.4rem; margin-bottom: 0.5rem; }
+.cta-box p { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.cta-btn {
+    display: inline-block; padding: 0.75rem 2rem; border-radius: 10px;
+    background: white; color: var(--accent-primary); font-weight: 700;
+    font-size: 0.95rem; text-decoration: none;
+    transition: all var(--transition); border: none; cursor: pointer;
+}
+.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.series-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; }
+.series-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.25rem; transition: all var(--transition);
+}
+.series-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.series-card.current { border-color: var(--accent-orange); box-shadow: 0 0 0 2px rgba(249,115,22,0.2); }
+.series-num { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent-primary); margin-bottom: 0.25rem; }
+.series-card.current .series-num { color: var(--accent-orange); }
+.series-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.2rem; }
+.series-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+.workflow-visual { display: flex; align-items: center; justify-content: center; gap: 1.25rem; margin-top: 2rem; flex-wrap: wrap; }
+.workflow-box { text-align: center; padding: 1.5rem 1.25rem; border-radius: 12px; min-width: 160px; }
+.workflow-box.accent { background: rgba(30,64,175,0.06); border: 1px solid rgba(30,64,175,0.15); }
+.workflow-box.orange-accent { background: rgba(249,115,22,0.06); border: 1px solid rgba(249,115,22,0.15); }
+.wf-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+.wf-label { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+.wf-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+.workflow-plus, .workflow-equals { font-size: 1.5rem; font-weight: 800; color: var(--accent-primary); }
+@media (max-width: 900px) {
+    .nav-sidebar { transform: translateX(-100%); }
+    .nav-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+    .menu-toggle { display: flex; }
+    .mobile-lang-toggle { display: flex; }
+    .main-content { margin-left: 0; }
+    section { padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+    .series-grid { grid-template-columns: repeat(2, 1fr); }
+    .workflow-visual { flex-direction: column; }
+}
+@media (max-width: 480px) {
+    section { padding: 2.5rem 1rem; }
+    h1 { font-size: 1.6rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .series-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
+
+<div class="mobile-lang-toggle">
+  <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+</div>
+
+<nav class="nav-sidebar" id="navSidebar" role="navigation">
+  <div class="nav-logo">
+    <h2>Morgenwert</h2>
+    <span data-i18n="nav_subtitle"></span>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+  <ul class="nav-items">
+    <li><a href="#slide-1" class="active"><span class="nav-num">01</span> <span data-i18n="nav1"></span></a></li>
+    <li><a href="#slide-2"><span class="nav-num">02</span> <span data-i18n="nav2"></span></a></li>
+    <li><a href="#slide-3"><span class="nav-num">03</span> <span data-i18n="nav3"></span></a></li>
+    <li><a href="#slide-4"><span class="nav-num">04</span> <span data-i18n="nav4"></span></a></li>
+    <li><a href="#slide-5"><span class="nav-num">05</span> <span data-i18n="nav5"></span></a></li>
+    <li><a href="#slide-6"><span class="nav-num">06</span> <span data-i18n="nav6"></span></a></li>
+    <li><a href="#slide-7"><span class="nav-num">07</span> <span data-i18n="nav7"></span></a></li>
+  </ul>
+</nav>
+
+<main class="main-content">
+
+  <!-- Slide 1: Title -->
+  <section id="slide-1">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s1_tag"></span>
+      <h1>Excel <span class="accent">&</span> AI</h1>
+      <p class="subtitle" data-i18n="s1_subtitle"></p>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">~60</div><div class="stat-label" data-i18n="s1_stat1"></div></div>
+        <div class="stat-card"><div class="stat-value orange">Live</div><div class="stat-label" data-i18n="s1_stat2"></div></div>
+        <div class="stat-card"><div class="stat-value">Q&A</div><div class="stat-label" data-i18n="s1_stat3"></div></div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s1_h1_title"></h4>
+        <p data-i18n="s1_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: Das Problem -->
+  <section id="slide-2">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s2_tag"></span>
+      <h2 data-i18n="s2_title"></h2>
+      <p class="subtitle" data-i18n="s2_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#9201;</div>
+          <div class="feature-title" data-i18n="s2_f1_title"></div>
+          <div class="feature-desc" data-i18n="s2_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#9888;</div>
+          <div class="feature-title" data-i18n="s2_f2_title"></div>
+          <div class="feature-desc" data-i18n="s2_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128260;</div>
+          <div class="feature-title" data-i18n="s2_f3_title"></div>
+          <div class="feature-desc" data-i18n="s2_f3_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#10067;</div>
+          <div class="feature-title" data-i18n="s2_f4_title"></div>
+          <div class="feature-desc" data-i18n="s2_f4_desc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Die Loesung -->
+  <section id="slide-3">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s3_tag"></span>
+      <h2 data-i18n="s3_title"></h2>
+      <p class="subtitle" data-i18n="s3_subtitle"></p>
+      <div class="workflow-visual">
+        <div class="workflow-box accent">
+          <div class="wf-icon">&#129489;</div>
+          <div class="wf-label" data-i18n="s3_wf_human"></div>
+          <div class="wf-sub" data-i18n="s3_wf_human_sub"></div>
+        </div>
+        <div class="workflow-plus">+</div>
+        <div class="workflow-box accent">
+          <div class="wf-icon">&#129302;</div>
+          <div class="wf-label" data-i18n="s3_wf_ai"></div>
+          <div class="wf-sub" data-i18n="s3_wf_ai_sub"></div>
+        </div>
+        <div class="workflow-equals">=</div>
+        <div class="workflow-box orange-accent">
+          <div class="wf-icon">&#128640;</div>
+          <div class="wf-label" data-i18n="s3_wf_result"></div>
+          <div class="wf-sub" data-i18n="s3_wf_result_sub"></div>
+        </div>
+      </div>
+      <div class="feature-grid" style="margin-top: 2rem;">
+        <div class="feature-card">
+          <div class="feature-icon">&#9881;</div>
+          <div class="feature-title" data-i18n="s3_f1_title"></div>
+          <div class="feature-desc" data-i18n="s3_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128221;</div>
+          <div class="feature-title" data-i18n="s3_f2_title"></div>
+          <div class="feature-desc" data-i18n="s3_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#9989;</div>
+          <div class="feature-title" data-i18n="s3_f3_title"></div>
+          <div class="feature-desc" data-i18n="s3_f3_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128161;</div>
+          <div class="feature-title" data-i18n="s3_f4_title"></div>
+          <div class="feature-desc" data-i18n="s3_f4_desc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 4: Live Demo Preview -->
+  <section id="slide-4">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s4_tag"></span>
+      <h2 data-i18n="s4_title"></h2>
+      <p class="subtitle" data-i18n="s4_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#128295;</div>
+          <div class="feature-title" data-i18n="s4_f1_title"></div>
+          <div class="feature-desc" data-i18n="s4_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#9989;</div>
+          <div class="feature-title" data-i18n="s4_f2_title"></div>
+          <div class="feature-desc" data-i18n="s4_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#128202;</div>
+          <div class="feature-title" data-i18n="s4_f3_title"></div>
+          <div class="feature-desc" data-i18n="s4_f3_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">&#128209;</div>
+          <div class="feature-title" data-i18n="s4_f4_title"></div>
+          <div class="feature-desc" data-i18n="s4_f4_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s4_h1_title"></h4>
+        <p data-i18n="s4_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5: Was du lernst -->
+  <section id="slide-5">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s5_tag"></span>
+      <h2 data-i18n="s5_title"></h2>
+      <p class="subtitle" data-i18n="s5_subtitle"></p>
+      <ul class="check-list" data-i18n-list="s5_items" style="margin-top: 1.5rem;"></ul>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s5_h1_title"></h4>
+        <p data-i18n="s5_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6: Webinar-Reihe -->
+  <section id="slide-6">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s6_tag"></span>
+      <h2 data-i18n="s6_title"></h2>
+      <p class="subtitle" data-i18n="s6_subtitle"></p>
+      <div class="series-grid">
+        <div class="series-card current">
+          <div class="series-num">Webinar 1</div>
+          <div class="series-title" data-i18n="s6_w1_title"></div>
+          <div class="series-desc" data-i18n="s6_w1_desc"></div>
+          <span class="badge" style="margin-top: 0.5rem;" data-i18n="s6_w1_badge"></span>
+        </div>
+        <div class="series-card">
+          <div class="series-num">Webinar 2</div>
+          <div class="series-title" data-i18n="s6_w2_title"></div>
+          <div class="series-desc" data-i18n="s6_w2_desc"></div>
+        </div>
+        <div class="series-card">
+          <div class="series-num">Webinar 3</div>
+          <div class="series-title" data-i18n="s6_w3_title"></div>
+          <div class="series-desc" data-i18n="s6_w3_desc"></div>
+        </div>
+        <div class="series-card">
+          <div class="series-num">Webinar 4</div>
+          <div class="series-title" data-i18n="s6_w4_title"></div>
+          <div class="series-desc" data-i18n="s6_w4_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s6_h1_title"></h4>
+        <p data-i18n="s6_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 7: Anmeldung & Kontakt -->
+  <section id="slide-7">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s7_tag"></span>
+      <h2 data-i18n="s7_title"></h2>
+      <p class="subtitle" data-i18n="s7_subtitle"></p>
+      <div class="feature-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem;">
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon">&#128270;</div>
+          <h3 data-i18n="s7_demo_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n="s7_demo_desc"></p>
+          <a class="cta-btn" style="padding: 0.6rem 1.5rem; font-size: 0.88rem; text-align: center; background: var(--accent-primary); color: white; border-radius: 8px;" href="https://morgenwert-dcf.onrender.com" target="_blank" data-i18n="s7_demo_btn"></a>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon orange">&#9993;</div>
+          <h3 data-i18n="s7_contact_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n-html="s7_contact_info"></p>
+        </div>
+      </div>
+      <div class="cta-box">
+        <h3 data-i18n="s7_cta_title"></h3>
+        <p data-i18n="s7_cta_desc"></p>
+        <a class="cta-btn" href="mailto:kontakt@morgenwert.de?subject=Anmeldung%20Webinar%20Excel%20%26%20AI" data-i18n="s7_cta_btn"></a>
+      </div>
+      <div class="cta-box" style="padding: 1.25rem 2rem; margin-top: 1rem; background: linear-gradient(135deg, var(--text-secondary), var(--text-primary));">
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;" data-i18n="s7_disc_title"></h3>
+        <p style="margin-bottom: 0; font-size: 0.85rem;" data-i18n="s7_disc_desc"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const translations = {
+  de: {
+    nav_subtitle: 'Webinar 1: Excel & AI',
+    nav1: 'Willkommen', nav2: 'Das Problem', nav3: 'Die L\u00f6sung',
+    nav4: 'Live Demo', nav5: 'Was du lernst', nav6: 'Webinar-Reihe', nav7: 'Anmeldung',
+    s1_tag: 'Kostenloses Webinar',
+    s1_subtitle: 'AI als Co-Pilot in deinem Excel-Workflow \u2013 Live Demo, praktische Tipps und der Einstieg in AI-gest\u00fctzte Finanzanalyse. Ein kostenloses Webinar von Morgenwert.',
+    s1_stat1: 'Minuten', s1_stat2: 'Demo', s1_stat3: 'Inklusive',
+    s1_h1_title: '\ud83c\udfaf Teil 1 der kostenlosen Webinar-Reihe',
+    s1_h1_desc: 'Dieses Webinar ist der Auftakt einer 4-teiligen Reihe, die dir einen Vorgeschmack auf das vollst\u00e4ndige 8-Wochen AI Analyst Program gibt. Kostenlos, praxisnah, unverbindlich.',
+    s2_tag: 'Das Problem',
+    s2_title: 'Wo steht der Financial Analyst heute?',
+    s2_subtitle: 'AI ver\u00e4ndert die Arbeit mit Finanzdaten grundlegend. Die Frage ist nicht ob, sondern wie man sie sinnvoll einsetzt.',
+    s2_f1_title: 'Manuelle Prozesse',
+    s2_f1_desc: 'Stundenlange manuelle Eingaben, Copy-Paste-Workflows und sich wiederholende Routineaufgaben in Excel. Zeit, die f\u00fcr Analyse fehlt.',
+    s2_f2_title: 'Fehleranf\u00e4llig',
+    s2_f2_desc: 'Komplexe Formeln, verkettete Abh\u00e4ngigkeiten und fehlende Validierung f\u00fchren zu Fehlern, die oft erst sp\u00e4t auffallen.',
+    s2_f3_title: 'Zeitintensiv',
+    s2_f3_desc: 'Modelle bauen, Daten aufbereiten, Templates erstellen \u2013 alles dauert l\u00e4nger als n\u00f6tig, weil die Werkzeuge nicht optimal genutzt werden.',
+    s2_f4_title: 'AI-Unsicherheit',
+    s2_f4_desc: 'Viele wissen, dass AI helfen k\u00f6nnte \u2013 aber nicht WIE. Welches Tool? Welcher Workflow? Wann manuell, wann AI?',
+    s3_tag: 'Die L\u00f6sung',
+    s3_title: 'AI als Co-Pilot \u2013 nicht als Ersatz',
+    s3_subtitle: 'Claude und AI-Tools unterst\u00fctzen dich bei Formeln, Validierung und Struktur. Du beh\u00e4ltst die Kontrolle \u2013 mit deutlich mehr Output.',
+    s3_wf_human: 'Analyst', s3_wf_human_sub: 'Strategie & Urteil',
+    s3_wf_ai: 'AI Co-Pilot', s3_wf_ai_sub: 'Claude / Agent Mode',
+    s3_wf_result: 'Bessere Ergebnisse', s3_wf_result_sub: 'Schneller & pr\u00e4ziser',
+    s3_f1_title: 'Setup & Konfiguration',
+    s3_f1_desc: 'Claude direkt mit deinem Excel-Workflow verbinden. Einrichtung und erste Schritte mit AI im Finanzkontext.',
+    s3_f2_title: 'Template Building',
+    s3_f2_desc: 'DCF-Templates und Financial Models mit AI-Unterst\u00fctzung schneller und strukturierter aufbauen.',
+    s3_f3_title: 'Validierung & QA',
+    s3_f3_desc: 'Formeln pr\u00fcfen, Fehler erkennen, Konsistenz sicherstellen. AI als zweites Augenpaar f\u00fcr deine Modelle.',
+    s3_f4_title: 'Best Practices',
+    s3_f4_desc: 'Wann AI, wann manuell? Klare Entscheidungsrahmen und ein Rules Tab, der deine Qualit\u00e4t sichert.',
+    s4_tag: 'Live Demo',
+    s4_title: 'Was wir gemeinsam bauen',
+    s4_subtitle: 'Im Webinar bauen wir zusammen ein DCF-Template mit AI-Unterst\u00fctzung \u2013 Schritt f\u00fcr Schritt, live und zum Mitmachen.',
+    s4_f1_title: 'Formel-Generierung',
+    s4_f1_desc: 'AI generiert DCF-Formeln basierend auf deiner Modellstruktur. Du pr\u00fcfst und passt an.',
+    s4_f2_title: 'Tabellen-Validierung',
+    s4_f2_desc: 'Automatische Pr\u00fcfung deiner Modellstruktur auf Konsistenz, Zirkelbez\u00fcge und fehlende Werte.',
+    s4_f3_title: 'Strukturiertes Modell',
+    s4_f3_desc: 'Best-Practice-Struktur f\u00fcr dein Financial Model: Inputs, Berechnungen, Outputs klar getrennt.',
+    s4_f4_title: 'Rules Tab',
+    s4_f4_desc: 'Deine Modellregeln formalisiert und dokumentiert \u2013 f\u00fcr nachvollziehbare und pr\u00fcfbare Modelle.',
+    s4_h1_title: '\ud83d\udcbb Hands-on: Mach mit!',
+    s4_h1_desc: 'Dies ist kein reiner Vortrag. Bring deinen Laptop mit \u2013 wir bauen gemeinsam. Du siehst live, wie AI deinen Excel-Workflow ver\u00e4ndert.',
+    s5_tag: 'Dein Takeaway',
+    s5_title: 'Was du aus diesem Webinar mitnimmst',
+    s5_subtitle: 'Konkrete Skills und Werkzeuge, die du sofort in deinem Arbeitsalltag einsetzen kannst.',
+    s5_items: [
+      'AI Setup f\u00fcr Excel-Workflows (Claude / Agent Mode)',
+      'Wie man ein DCF-Template mit AI-Unterst\u00fctzung baut',
+      'Best Practices: Rules Tab, Qualit\u00e4tssicherung, Formeln pr\u00fcfen',
+      'Strategie: Wann AI nutzen, wann manuell bleiben',
+      'Grundlagen des 3-Way Financial Model (GuV, Bilanz, Cashflow)',
+      'Erster Eindruck: Was ist mit Python und eigenen Apps m\u00f6glich?'
+    ],
+    s5_h1_title: '\u2705 Kein Vorwissen in AI n\u00f6tig',
+    s5_h1_desc: 'Du brauchst keine Programmierkenntnisse und keine AI-Erfahrung. Nur Excel-Grundkenntnisse und Neugier. Wir starten bei Null \u2013 und kommen trotzdem weit.',
+    s6_tag: 'Webinar-Reihe',
+    s6_title: 'Dein n\u00e4chster Schritt',
+    s6_subtitle: 'Dieses Webinar ist Teil 1 einer kostenlosen 4-teiligen Reihe. Jedes Webinar gibt dir einen Vorgeschmack auf das vollst\u00e4ndige Programm.',
+    s6_w1_title: 'Excel & AI', s6_w1_desc: 'AI-Setup, DCF-Template, Best Practices', s6_w1_badge: 'Dieses Webinar',
+    s6_w2_title: 'Python Basics mit AI', s6_w2_desc: 'Von Excel zu Python \u2013 Pandas, DataFrames, Datenverarbeitung',
+    s6_w3_title: 'Python Advanced', s6_w3_desc: 'Regressionsanalyse, Monte Carlo, Sensitivit\u00e4tsanalyse',
+    s6_w4_title: 'Applikation & Agents', s6_w4_desc: 'Eigene App bauen, Deployment, Ausblick AI Agents',
+    s6_h1_title: '\ud83d\ude80 Vom Webinar zum vollst\u00e4ndigen Programm',
+    s6_h1_desc: 'Die Webinar-Reihe gibt dir einen Vorgeschmack. Das vollst\u00e4ndige 8-Wochen AI Analyst Program geht in die Tiefe \u2013 mit pers\u00f6nlicher Betreuung, eigenen Projekten und einem Kohortenformat f\u00fcr gemeinsames Lernen.',
+    s7_tag: 'Anmeldung',
+    s7_title: 'Jetzt anmelden',
+    s7_subtitle: 'Sichere dir deinen Platz im kostenlosen Webinar und mach den ersten Schritt in Richtung AI-gest\u00fctzte Finanzanalyse.',
+    s7_demo_title: 'Demo ansehen',
+    s7_demo_desc: 'Wirf einen Blick auf unsere KMU-Bewertungsapplikation \u2013 ein Beispiel daf\u00fcr, was am Ende des vollst\u00e4ndigen Programms m\u00f6glich ist.',
+    s7_demo_btn: 'Demo ansehen \u2192',
+    s7_contact_title: 'Kontakt',
+    s7_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6. Stock<br>20097 Hamburg<br><br>Telefon: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobil: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>E-Mail: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s7_cta_title: 'Kostenlos anmelden',
+    s7_cta_desc: 'Schreib uns eine kurze E-Mail mit dem Betreff "Webinar Excel & AI" und wir senden dir alle Details.',
+    s7_cta_btn: 'Jetzt anmelden \u2192',
+    s7_disc_title: 'Wir halten Schritt.',
+    s7_disc_desc: 'AI entwickelt sich t\u00e4glich weiter \u2013 und wir mit. Deshalb behalten wir uns kurzfristige \u00c4nderungen oder Schwerpunktverschiebungen vor. Der Inhalt und die Lernziele bleiben selbstverst\u00e4ndlich erhalten.',
+  },
+  en: {
+    nav_subtitle: 'Webinar 1: Excel & AI',
+    nav1: 'Welcome', nav2: 'The Problem', nav3: 'The Solution',
+    nav4: 'Live Demo', nav5: "What You'll Learn", nav6: 'Webinar Series', nav7: 'Sign Up',
+    s1_tag: 'Free Webinar',
+    s1_subtitle: 'AI as a co-pilot in your Excel workflow \u2013 live demo, practical tips, and your entry into AI-powered financial analysis. A free webinar by Morgenwert.',
+    s1_stat1: 'Minutes', s1_stat2: 'Demo', s1_stat3: 'Included',
+    s1_h1_title: '\ud83c\udfaf Part 1 of the Free Webinar Series',
+    s1_h1_desc: 'This webinar kicks off a 4-part series that gives you a taste of the full 8-week AI Analyst Program. Free, hands-on, no commitment.',
+    s2_tag: 'The Problem',
+    s2_title: 'Where Does the Financial Analyst Stand Today?',
+    s2_subtitle: 'AI is fundamentally changing how we work with financial data. The question is not whether to use it, but how to use it effectively.',
+    s2_f1_title: 'Manual Processes',
+    s2_f1_desc: 'Hours of manual data entry, copy-paste workflows, and repetitive routine tasks in Excel. Time that should be spent on analysis.',
+    s2_f2_title: 'Error-Prone',
+    s2_f2_desc: 'Complex formulas, chained dependencies, and missing validation lead to errors that are often caught too late.',
+    s2_f3_title: 'Time-Consuming',
+    s2_f3_desc: "Building models, preparing data, creating templates \u2013 everything takes longer than necessary because the tools aren't used optimally.",
+    s2_f4_title: 'AI Uncertainty',
+    s2_f4_desc: "Many know AI could help \u2013 but not HOW. Which tool? Which workflow? When manual, when AI?",
+    s3_tag: 'The Solution',
+    s3_title: 'AI as a Co-Pilot \u2013 Not a Replacement',
+    s3_subtitle: 'Claude and AI tools support you with formulas, validation, and structure. You stay in control \u2013 with significantly more output.',
+    s3_wf_human: 'Analyst', s3_wf_human_sub: 'Strategy & Judgment',
+    s3_wf_ai: 'AI Co-Pilot', s3_wf_ai_sub: 'Claude / Agent Mode',
+    s3_wf_result: 'Better Results', s3_wf_result_sub: 'Faster & More Precise',
+    s3_f1_title: 'Setup & Configuration',
+    s3_f1_desc: 'Connect Claude directly with your Excel workflow. Setup and first steps with AI in a financial context.',
+    s3_f2_title: 'Template Building',
+    s3_f2_desc: 'Build DCF templates and financial models faster and more structured with AI assistance.',
+    s3_f3_title: 'Validation & QA',
+    s3_f3_desc: 'Check formulas, detect errors, ensure consistency. AI as a second pair of eyes for your models.',
+    s3_f4_title: 'Best Practices',
+    s3_f4_desc: 'When to use AI, when to stay manual? Clear decision frameworks and a rules tab that ensures quality.',
+    s4_tag: 'Live Demo',
+    s4_title: "What We'll Build Together",
+    s4_subtitle: "In this webinar, we'll build a DCF template with AI assistance \u2013 step by step, live, and interactive.",
+    s4_f1_title: 'Formula Generation',
+    s4_f1_desc: 'AI generates DCF formulas based on your model structure. You review and adjust.',
+    s4_f2_title: 'Table Validation',
+    s4_f2_desc: 'Automatic checking of your model structure for consistency, circular references, and missing values.',
+    s4_f3_title: 'Structured Model',
+    s4_f3_desc: 'Best-practice structure for your financial model: inputs, calculations, outputs clearly separated.',
+    s4_f4_title: 'Rules Tab',
+    s4_f4_desc: 'Your model rules formalized and documented \u2013 for traceable and auditable models.',
+    s4_h1_title: '\ud83d\udcbb Hands-on: Join In!',
+    s4_h1_desc: "This is not just a lecture. Bring your laptop \u2013 we'll build together. See live how AI transforms your Excel workflow.",
+    s5_tag: 'Your Takeaway',
+    s5_title: "What You'll Take Away from This Webinar",
+    s5_subtitle: 'Concrete skills and tools you can immediately use in your daily work.',
+    s5_items: [
+      'AI setup for Excel workflows (Claude / Agent Mode)',
+      'How to build a DCF template with AI assistance',
+      'Best practices: Rules tab, quality assurance, formula checking',
+      'Strategy: When to use AI, when to stay manual',
+      'Fundamentals of the 3-way financial model (P&L, balance sheet, cash flow)',
+      "First impression: What's possible with Python and custom apps?"
+    ],
+    s5_h1_title: '\u2705 No Prior AI Knowledge Needed',
+    s5_h1_desc: "You don't need programming skills or AI experience. Just basic Excel knowledge and curiosity. We start from zero \u2013 and still get far.",
+    s6_tag: 'Webinar Series',
+    s6_title: 'Your Next Step',
+    s6_subtitle: 'This webinar is Part 1 of a free 4-part series. Each webinar gives you a taste of the full program.',
+    s6_w1_title: 'Excel & AI', s6_w1_desc: 'AI setup, DCF template, best practices', s6_w1_badge: 'This Webinar',
+    s6_w2_title: 'Python Basics with AI', s6_w2_desc: 'From Excel to Python \u2013 Pandas, DataFrames, data processing',
+    s6_w3_title: 'Python Advanced', s6_w3_desc: 'Regression analysis, Monte Carlo, sensitivity analysis',
+    s6_w4_title: 'Application & Agents', s6_w4_desc: 'Build your own app, deployment, AI agents outlook',
+    s6_h1_title: '\ud83d\ude80 From Webinar Series to Full Program',
+    s6_h1_desc: 'The webinar series gives you a taste. The full 8-week AI Analyst Program goes deep \u2013 with personal mentoring, hands-on projects, and a cohort format for learning together.',
+    s7_tag: 'Sign Up',
+    s7_title: 'Register Now',
+    s7_subtitle: 'Secure your spot in the free webinar and take the first step toward AI-powered financial analysis.',
+    s7_demo_title: 'View Demo',
+    s7_demo_desc: "Take a look at our SME valuation application \u2013 an example of what's possible at the end of the full program.",
+    s7_demo_btn: 'View Demo \u2192',
+    s7_contact_title: 'Contact',
+    s7_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6th Floor<br>20097 Hamburg, Germany<br><br>Phone: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobile: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>Email: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s7_cta_title: 'Register for Free',
+    s7_cta_desc: 'Send us a short email with the subject "Webinar Excel & AI" and we\'ll send you all the details.',
+    s7_cta_btn: 'Sign Up Now \u2192',
+    s7_disc_title: 'We Keep Pace.',
+    s7_disc_desc: "AI evolves every day \u2013 and so do we. That's why we reserve the right to make short-term changes or shifts in emphasis. The content and learning objectives will, of course, remain intact.",
+  }
+};
+
+let currentLang = 'de';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang][key] !== undefined) el.textContent = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (translations[lang][key] !== undefined) el.innerHTML = translations[lang][key];
+  });
+  document.querySelectorAll('[data-i18n-list]').forEach(ul => {
+    const key = ul.getAttribute('data-i18n-list');
+    if (translations[lang][key] !== undefined) {
+      ul.innerHTML = translations[lang][key].map(item => '<li>' + item + '</li>').join('');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setLang('de'));
+
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-items a');
+const progressBar = document.getElementById('progressBar');
+const menuToggle = document.getElementById('menuToggle');
+const navSidebar = document.getElementById('navSidebar');
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+}
+function updateActiveNav() {
+    let current = '';
+    sections.forEach(section => {
+        if (section.getBoundingClientRect().top <= window.innerHeight * 0.4) current = section.id;
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+    });
+}
+window.addEventListener('scroll', () => { updateProgress(); updateActiveNav(); });
+window.addEventListener('load', () => { updateProgress(); updateActiveNav(); });
+menuToggle.addEventListener('click', () => navSidebar.classList.toggle('open'));
+navLinks.forEach(link => link.addEventListener('click', () => navSidebar.classList.remove('open')));
+document.addEventListener('keydown', e => {
+    const ids = Array.from(sections).map(s => s.id);
+    let current = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) current = i; });
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && current < ids.length - 1) {
+        e.preventDefault(); document.getElementById(ids[current + 1]).scrollIntoView({ behavior: 'smooth' });
+    }
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && current > 0) {
+        e.preventDefault(); document.getElementById(ids[current - 1]).scrollIntoView({ behavior: 'smooth' });
+    }
+});
+</script>
+</body>
+</html>

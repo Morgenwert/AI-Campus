@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kohorte AI Analyst Program  - Morgenwert</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --accent-primary: #1e40af;
+    --accent-secondary: #3b82f6;
+    --accent-light: #60a5fa;
+    --accent-orange: #f97316;
+    --accent-orange-light: #fdba74;
+    --bg-color: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --nav-width: 260px;
+    --transition: 0.3s ease;
+}
+html { scroll-behavior: smooth; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary); background: var(--bg-secondary);
+    line-height: 1.6; overflow-x: hidden;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 4px; z-index: 1000;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    width: 0%; transition: width 0.3s ease;
+}
+.nav-sidebar {
+    position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
+    background: var(--bg-color); border-right: 1px solid var(--border-color);
+    z-index: 900; display: flex; flex-direction: column;
+    padding: 1.5rem 0; overflow-y: auto;
+    box-shadow: var(--shadow-sm); transition: transform var(--transition);
+}
+.nav-logo { padding: 0 1.25rem 1.25rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem; }
+.nav-logo h2 { font-size: 1rem; font-weight: 700; color: var(--accent-primary); letter-spacing: -0.02em; }
+.nav-logo span { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 2px; }
+.lang-toggle {
+    display: flex; gap: 0; margin: 0 1.25rem 0.75rem;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+}
+.lang-btn {
+    flex: 1; padding: 0.4rem 0.75rem; border: none; background: var(--bg-color);
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all var(--transition);
+    color: var(--text-secondary); text-align: center;
+}
+.lang-btn.active { background: var(--accent-primary); color: white; }
+.lang-btn:hover:not(.active) { background: var(--bg-tertiary); }
+.nav-items { list-style: none; flex: 1; }
+.nav-items li { margin: 2px 0.5rem; }
+.nav-items a {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 8px;
+    text-decoration: none; color: var(--text-secondary);
+    font-size: 0.82rem; font-weight: 500; transition: all var(--transition);
+}
+.nav-items a:hover { background: var(--bg-tertiary); color: var(--accent-primary); }
+.nav-items a.active { background: rgba(30,64,175,0.08); color: var(--accent-primary); font-weight: 600; }
+.nav-num {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0; transition: all var(--transition);
+}
+.nav-items a.active .nav-num { background: var(--accent-primary); color: white; }
+.menu-toggle {
+    display: none; position: fixed; top: 1rem; left: 1rem; z-index: 950;
+    width: 44px; height: 44px; border-radius: 10px;
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md); cursor: pointer;
+    align-items: center; justify-content: center; transition: all var(--transition);
+}
+.menu-toggle svg { width: 20px; height: 20px; stroke: var(--text-primary); }
+.mobile-lang-toggle {
+    display: none; position: fixed; top: 1rem; right: 1rem; z-index: 950;
+    border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+    background: var(--bg-color); box-shadow: var(--shadow-md);
+}
+.mobile-lang-toggle .lang-btn { padding: 0.55rem 0.75rem; font-size: 0.75rem; }
+.main-content { margin-left: var(--nav-width); min-height: 100vh; }
+section {
+    min-height: 100vh; padding: 4rem 3rem;
+    display: flex; align-items: center; justify-content: center;
+}
+section:nth-child(even) { background: var(--bg-color); }
+section:nth-child(odd) { background: var(--bg-secondary); }
+.slide-inner { max-width: 900px; width: 100%; }
+.slide-tag {
+    display: inline-block; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent-primary); background: rgba(30,64,175,0.08);
+    padding: 0.3rem 0.75rem; border-radius: 20px; margin-bottom: 1rem;
+}
+.slide-tag.orange { color: var(--accent-orange); background: rgba(249,115,22,0.1); }
+h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); }
+h1 .accent { color: var(--accent-primary); }
+h2 { font-size: 2rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+h3 { font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.5rem; }
+.subtitle { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; margin-top: 1rem; max-width: 640px; }
+.badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    padding: 0.2rem 0.6rem; border-radius: 12px;
+    background: rgba(249,115,22,0.12); color: var(--accent-orange);
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.badge.alt { background: rgba(30,64,175,0.1); color: var(--accent-primary); }
+.card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem;
+    box-shadow: var(--shadow-md); transition: all var(--transition);
+}
+.card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); }
+.feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+.feature-card {
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 1.5rem; transition: all var(--transition);
+}
+.feature-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent-secondary); transform: translateY(-2px); }
+.feature-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: var(--accent-primary); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1rem;
+}
+.feature-icon.orange { background: var(--accent-orange); }
+.feature-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.feature-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; }
+.timeline { position: relative; margin-top: 2rem; padding-left: 2rem; }
+.timeline::before {
+    content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px;
+    width: 3px; background: linear-gradient(to bottom, var(--accent-primary), var(--accent-light), var(--accent-secondary), var(--accent-orange));
+    border-radius: 2px;
+}
+.timeline-item { position: relative; margin-bottom: 1.75rem; padding-left: 1.5rem; }
+.timeline-item::before {
+    content: ''; position: absolute; left: -2rem; top: 6px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent-primary); border: 3px solid var(--bg-secondary);
+    box-shadow: 0 0 0 2px var(--accent-primary);
+}
+.timeline-item:nth-child(3)::before,
+.timeline-item:nth-child(4)::before { background: var(--accent-secondary); box-shadow: 0 0 0 2px var(--accent-secondary); }
+.timeline-item:nth-child(5)::before,
+.timeline-item:nth-child(6)::before { background: var(--accent-light); box-shadow: 0 0 0 2px var(--accent-light); }
+.timeline-item:nth-child(7)::before,
+.timeline-item:nth-child(8)::before { background: var(--accent-orange); box-shadow: 0 0 0 2px var(--accent-orange); }
+.timeline-week {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--accent-primary); margin-bottom: 0.25rem;
+}
+.timeline-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.2rem; }
+.timeline-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+.highlight-box {
+    background: linear-gradient(135deg, rgba(30,64,175,0.06), rgba(59,130,246,0.06));
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin-top: 1.5rem;
+}
+.highlight-box.orange {
+    background: linear-gradient(135deg, rgba(249,115,22,0.06), rgba(253,186,116,0.06));
+    border-left-color: var(--accent-orange);
+}
+.highlight-box h4 { color: var(--accent-primary); font-size: 0.95rem; margin-bottom: 0.35rem; }
+.highlight-box.orange h4 { color: var(--accent-orange); }
+.highlight-box p { font-size: 0.88rem; color: var(--text-secondary); }
+.tabs { margin-top: 1.5rem; }
+.tab-list { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.tab-btn {
+    padding: 0.55rem 1.1rem; border-radius: 8px; border: 1px solid var(--border-color);
+    background: var(--bg-color); color: var(--text-secondary);
+    font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all var(--transition);
+}
+.tab-btn:hover { border-color: var(--accent-secondary); color: var(--accent-primary); }
+.tab-btn.active { background: var(--accent-primary); color: white; border-color: var(--accent-primary); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.stat-card {
+    text-align: center; padding: 1.25rem 1rem;
+    background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px;
+}
+.stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent-primary); }
+.stat-value.orange { color: var(--accent-orange); }
+.stat-label { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem; font-weight: 500; }
+.cta-box {
+    background: linear-gradient(135deg, var(--accent-primary), #2563eb);
+    border-radius: 16px; padding: 2.5rem; color: white; text-align: center; margin-top: 2rem;
+}
+.cta-box h3 { color: white; font-size: 1.4rem; margin-bottom: 0.5rem; }
+.cta-box p { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.cta-btn {
+    display: inline-block; padding: 0.75rem 2rem; border-radius: 10px;
+    background: white; color: var(--accent-primary); font-weight: 700;
+    font-size: 0.95rem; text-decoration: none;
+    transition: all var(--transition); border: none; cursor: pointer;
+}
+.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.check-list { list-style: none; margin-top: 1rem; }
+.check-list li {
+    padding: 0.5rem 0; padding-left: 1.75rem; position: relative;
+    font-size: 0.92rem; color: var(--text-secondary);
+}
+.check-list li::before {
+    content: '✓'; position: absolute; left: 0; top: 0.5rem;
+    color: var(--accent-primary); font-weight: 700; font-size: 0.9rem;
+}
+@media (max-width: 900px) {
+    .nav-sidebar { transform: translateX(-100%); }
+    .nav-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+    .menu-toggle { display: flex; }
+    .mobile-lang-toggle { display: flex; }
+    .main-content { margin-left: 0; }
+    section { padding: 3rem 1.5rem; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.5rem; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    section { padding: 2.5rem 1rem; }
+    h1 { font-size: 1.6rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="menu-toggle" id="menuToggle" aria-label="Menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
+
+<div class="mobile-lang-toggle">
+  <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+  <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+</div>
+
+<nav class="nav-sidebar" id="navSidebar" role="navigation" aria-label="Slide-Navigation">
+  <div class="nav-logo">
+    <h2>Morgenwert</h2>
+    <span>AI Analyst Program</span>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" data-lang="de" onclick="setLang('de')">DE</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+  <ul class="nav-items">
+    <li><a href="#slide-1" class="active"><span class="nav-num">01</span> <span data-i18n="nav1"></span></a></li>
+    <li><a href="#slide-2"><span class="nav-num">02</span> <span data-i18n="nav2"></span></a></li>
+    <li><a href="#slide-3"><span class="nav-num">03</span> <span data-i18n="nav3"></span></a></li>
+    <li><a href="#slide-4"><span class="nav-num">04</span> <span data-i18n="nav4"></span></a></li>
+    <li><a href="#slide-5"><span class="nav-num">05</span> <span data-i18n="nav5"></span></a></li>
+    <li><a href="#slide-6"><span class="nav-num">06</span> <span data-i18n="nav6"></span></a></li>
+    <li><a href="#slide-7"><span class="nav-num">07</span> <span data-i18n="nav7"></span></a></li>
+    <li><a href="#slide-8"><span class="nav-num">08</span> <span data-i18n="nav8"></span></a></li>
+    <li><a href="#slide-9"><span class="nav-num">09</span> <span data-i18n="nav9"></span></a></li>
+    <li><a href="#slide-10"><span class="nav-num">10</span> <span data-i18n="nav10"></span></a></li>
+  </ul>
+</nav>
+
+<main class="main-content">
+
+  <!-- Slide 1: Title -->
+  <section id="slide-1">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s1_tag"></span>
+      <h1>AI-Powered Analyst<br><span class="accent">Program</span></h1>
+      <p class="subtitle" data-i18n="s1_subtitle"></p>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value">8</div><div class="stat-label" data-i18n="s1_stat1"></div></div>
+        <div class="stat-card"><div class="stat-value orange">4</div><div class="stat-label" data-i18n="s1_stat2"></div></div>
+        <div class="stat-card"><div class="stat-value">1</div><div class="stat-label" data-i18n="s1_stat3"></div></div>
+        <div class="stat-card"><div class="stat-value orange">∞</div><div class="stat-label">Skills</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: Why -->
+  <section id="slide-2">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s2_tag"></span>
+      <h2 data-i18n="s2_title"></h2>
+      <p class="subtitle" data-i18n="s2_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title" data-i18n="s2_f1_title"></div>
+          <div class="feature-desc" data-i18n="s2_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">🎯</div>
+          <div class="feature-title" data-i18n="s2_f2_title"></div>
+          <div class="feature-desc" data-i18n="s2_f2_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🐍</div>
+          <div class="feature-title" data-i18n="s2_f3_title"></div>
+          <div class="feature-desc" data-i18n="s2_f3_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">🚀</div>
+          <div class="feature-title" data-i18n="s2_f4_title"></div>
+          <div class="feature-desc" data-i18n="s2_f4_desc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: Overview Stats -->
+  <section id="slide-3">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s3_tag"></span>
+      <h2 data-i18n="s3_title"></h2>
+      <div class="stats-row" style="margin-top: 2rem;">
+        <div class="stat-card"><div class="stat-value">8</div><div class="stat-label" data-i18n="s3_stat1"></div></div>
+        <div class="stat-card"><div class="stat-value orange">4</div><div class="stat-label" data-i18n="s3_stat2"></div></div>
+        <div class="stat-card"><div class="stat-value">4</div><div class="stat-label" data-i18n="s3_stat3"></div></div>
+      </div>
+      <div class="highlight-box" style="margin-top: 2rem;">
+        <h4 data-i18n="s3_h1_title"></h4>
+        <p data-i18n="s3_h1_desc"></p>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1rem;">
+        <h4 data-i18n="s3_h2_title"></h4>
+        <p data-i18n="s3_h2_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 4: Curriculum Overview with Tabs -->
+  <section id="slide-4">
+    <div class="slide-inner">
+      <span class="slide-tag">Curriculum</span>
+      <h2 data-i18n="s4_title"></h2>
+      <p class="subtitle" data-i18n="s4_subtitle"></p>
+      <div class="tabs">
+        <div class="tab-list">
+          <button class="tab-btn active" data-tab="mod1" data-i18n="s4_tab1"></button>
+          <button class="tab-btn" data-tab="mod2" data-i18n="s4_tab2"></button>
+          <button class="tab-btn" data-tab="mod3" data-i18n="s4_tab3"></button>
+          <button class="tab-btn" data-tab="mod4" data-i18n="s4_tab4"></button>
+        </div>
+        <div class="tab-panel active" id="tab-mod1">
+          <div class="card">
+            <h3 data-i18n-html="s4_mod1_title"></h3>
+            <ul class="check-list" data-i18n-list="s4_mod1_items"></ul>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-mod2">
+          <div class="card">
+            <h3 data-i18n-html="s4_mod2_title"></h3>
+            <ul class="check-list" data-i18n-list="s4_mod2_items"></ul>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-mod3">
+          <div class="card">
+            <h3 data-i18n-html="s4_mod3_title"></h3>
+            <ul class="check-list" data-i18n-list="s4_mod3_items"></ul>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-mod4">
+          <div class="card">
+            <h3 data-i18n-html="s4_mod4_title"></h3>
+            <ul class="check-list" data-i18n-list="s4_mod4_items"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5: Module 1 Deep Dive -->
+  <section id="slide-5">
+    <div class="slide-inner">
+      <span class="slide-tag">Modul 1</span>
+      <h2 data-i18n="s5_title"></h2>
+      <p class="subtitle" data-i18n="s5_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title" data-i18n="s5_f1_title"></div>
+          <div class="feature-desc" data-i18n="s5_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">📐</div>
+          <div class="feature-title" data-i18n="s5_f2_title"></div>
+          <div class="feature-desc" data-i18n="s5_f2_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s5_h1_title"></h4>
+        <p data-i18n="s5_h1_desc"></p>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1rem;">
+        <h4 data-i18n="s5_h2_title"></h4>
+        <p data-i18n="s5_h2_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6: Module 2 Deep Dive -->
+  <section id="slide-6">
+    <div class="slide-inner">
+      <span class="slide-tag">Modul 2</span>
+      <h2 data-i18n="s6_title"></h2>
+      <p class="subtitle" data-i18n="s6_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-title" data-i18n="s6_f1_title"></div>
+          <div class="feature-desc" data-i18n="s6_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">🔗</div>
+          <div class="feature-title" data-i18n="s6_f2_title"></div>
+          <div class="feature-desc" data-i18n="s6_f2_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box orange" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s6_h1_title"></h4>
+        <p data-i18n="s6_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 7: Module 3 Deep Dive -->
+  <section id="slide-7">
+    <div class="slide-inner">
+      <span class="slide-tag orange">Modul 3</span>
+      <h2 data-i18n="s7_title"></h2>
+      <p class="subtitle" data-i18n="s7_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📓</div>
+          <div class="feature-title" data-i18n="s7_f1_title"></div>
+          <div class="feature-desc" data-i18n="s7_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">🚀</div>
+          <div class="feature-title" data-i18n="s7_f2_title"></div>
+          <div class="feature-desc" data-i18n="s7_f2_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s7_h1_title"></h4>
+        <p data-i18n="s7_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 8: Woche 7-8 -->
+  <section id="slide-8">
+    <div class="slide-inner">
+      <span class="slide-tag orange" data-i18n="s8_tag"></span>
+      <h2 data-i18n="s8_title"></h2>
+      <p class="subtitle" data-i18n="s8_subtitle"></p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <div class="feature-title" data-i18n="s8_f1_title"></div>
+          <div class="feature-desc" data-i18n="s8_f1_desc"></div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon orange">🤖</div>
+          <div class="feature-title" data-i18n="s8_f2_title"></div>
+          <div class="feature-desc" data-i18n="s8_f2_desc"></div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top: 1.5rem;">
+        <h4 data-i18n="s8_h1_title"></h4>
+        <p data-i18n="s8_h1_desc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 9: Learning Path -->
+  <section id="slide-9">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s9_tag"></span>
+      <h2 data-i18n="s9_title"></h2>
+      <p class="subtitle" data-i18n="s9_subtitle"></p>
+      <div class="timeline" style="margin-top: 2rem;">
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w1_week"></div>
+          <div class="timeline-title" data-i18n="s9_w1_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w1_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w2_week"></div>
+          <div class="timeline-title" data-i18n="s9_w2_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w2_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w3_week"></div>
+          <div class="timeline-title" data-i18n="s9_w3_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w3_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w4_week"></div>
+          <div class="timeline-title" data-i18n="s9_w4_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w4_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w5_week"></div>
+          <div class="timeline-title" data-i18n="s9_w5_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w5_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w6_week"></div>
+          <div class="timeline-title" data-i18n="s9_w6_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w6_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w7_week"></div>
+          <div class="timeline-title" data-i18n="s9_w7_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w7_desc"></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-week" data-i18n="s9_w8_week"></div>
+          <div class="timeline-title" data-i18n="s9_w8_title"></div>
+          <div class="timeline-desc" data-i18n="s9_w8_desc"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 10: Next Steps -->
+  <section id="slide-10">
+    <div class="slide-inner">
+      <span class="slide-tag" data-i18n="s10_tag"></span>
+      <h2 data-i18n="s10_title"></h2>
+      <p class="subtitle" data-i18n="s10_subtitle"></p>
+      <div class="feature-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem;">
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon">🔍</div>
+          <h3 data-i18n="s10_demo_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n="s10_demo_desc"></p>
+          <a class="cta-btn" style="padding: 0.6rem 1.5rem; font-size: 0.88rem; text-align: center; background: var(--accent-primary); color: white; border-radius: 8px;" href="https://morgenwert-dcf.onrender.com" target="_blank" data-i18n="s10_demo_btn"></a>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;" data-i18n="s10_demo_hint"></p>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="feature-icon orange">✉️</div>
+          <h3 data-i18n="s10_contact_title"></h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.55; flex: 1;" data-i18n-html="s10_contact_info"></p>
+        </div>
+      </div>
+      <div class="cta-box" style="padding: 1.25rem 2rem; margin-top: 1.5rem;">
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;" data-i18n="s10_cta_title"></h3>
+        <p style="margin-bottom: 0; font-size: 0.85rem;" data-i18n="s10_cta_desc"></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+const translations = {
+  de: {
+    // Nav
+    nav1: 'Übersicht', nav2: 'Warum dieses Programm?', nav3: 'Auf einen Blick',
+    nav4: 'Curriculum', nav5: 'Modul 1: AI & Excel', nav6: 'Modul 2: Python',
+    nav7: 'Modul 3: Application', nav8: 'Woche 7-8: Vertiefung',
+    nav9: 'Lernpfad', nav10: 'Nächste Schritte',
+    // Slide 1
+    s1_tag: 'Kohortenbasiertes Programm',
+    s1_subtitle: 'Von AI-gestütztem Excel über Python bis hin zu eigenen, Framework-gestützten Applikationen - in 8 Wochen zum AI-gestützten Analysten. Ein praxisnahes Kohortenprogramm von Morgenwert.',
+    s1_stat1: 'Wochen', s1_stat2: 'Module', s1_stat3: 'Kohorte',
+    // Slide 2
+    s2_tag: 'Das Problem', s2_title: 'Warum dieses Programm?',
+    s2_subtitle: 'Financial Analysts stehen an einem Wendepunkt: KI verändert die Arbeit grundlegend. Die Frage ist nicht ob, sondern wie man sie sinnvoll einsetzt.',
+    s2_f1_title: 'Excel trifft AI',
+    s2_f1_desc: 'Claude als Co-Pilot direkt in deinem Excel-Workflow - nicht als Ersatz, sondern als Verstärker. Alternativ auch mit Agent Mode möglich.',
+    s2_f2_title: 'Strategie statt Hype',
+    s2_f2_desc: 'Wann nutze ich KI, wann bleibe ich manuell? Klare Entscheidungsrahmen statt Buzzwords.',
+    s2_f3_title: 'Excel → Python Bridge',
+    s2_f3_desc: 'Der sanfte Übergang: Excel-Konzepte in Python übersetzen, ohne bei Null anzufangen.',
+    s2_f4_title: 'Eigene App bauen',
+    s2_f4_desc: 'Am Ende steht deine eigene Applikation - dein interaktives Bewertungstool.',
+    // Slide 3
+    s3_tag: 'Auf einen Blick', s3_title: 'Das Programm in Zahlen',
+    s3_stat1: 'Wochen Laufzeit', s3_stat2: 'Workshop-Module', s3_stat3: 'KI-bezogene Themengebiete',
+    s3_h1_title: '💡 Kohortenformat',
+    s3_h1_desc: 'Laufende Kohorten mit festen Gruppen - gemeinsam starten, gemeinsam lernen. Jede Kohorte beginnt mit einer Intro-Session und läuft dann 8 Wochen strukturiert durch alle 4 Module.',
+    s3_h2_title: '🎯 Zielgruppe',
+    s3_h2_desc: 'Financial Analysts, Controller, Unternehmensberater und alle, die mit Finanzdaten arbeiten und ihre Workflows mit AI und Python auf das nächste Level bringen wollen.',
+    // Slide 4
+    s4_title: '4 Module, 8 Wochen, 1 Ziel',
+    s4_subtitle: 'Vom AI-gestützten Excel-Setup über Python bis hin zu Agents.',
+    s4_tab1: 'Modul 1: AI & Excel', s4_tab2: 'Modul 2: Python',
+    s4_tab3: 'Modul 3: Application', s4_tab4: 'Modul 4: Agents',
+    s4_mod1_title: 'Modul 1 - AI & Excel <span class="badge">Woche 1-2</span>',
+    s4_mod1_items: [
+      'Excel-Workflow + Claude Setup (alternativ Agent Mode)',
+      'DCF-Template, Tabellen-Validierung, Formeln',
+      'Best-Practice Struktur, Rules Tab, Qualitätssicherung',
+      '3-Way Financial Model mit eigenen Daten',
+      'Strategie: Wann AI, wann manuell?'
+    ],
+    s4_mod2_title: 'Modul 2 - Python <span class="badge">Woche 3-4</span>',
+    s4_mod2_items: [
+      'Python Grundlagen (Pandas, DataFrames)',
+      'Excel-Konzepte → Python Übergang',
+      'Excel-Daten in Python laden und verarbeiten',
+      'Pandas-Workflows für Financial Data',
+      'Brücke: Excel-Formeln → Python-Funktionen'
+    ],
+    s4_mod3_title: 'Modul 3 - Application <span class="badge">Woche 5-6</span>',
+    s4_mod3_items: [
+      'DCF / 3-Way-Model als Python Notebook',
+      'Script-basierter Workflow, Versionierung',
+      'Python Script → Eigene Applikation (Framework-gestützt)',
+      'Interaktive Oberfläche für Bewertungsmodell',
+      'Abschlussprojekt: Eigene Mini-App'
+    ],
+    s4_mod4_title: 'Woche 7-8 - Check-in, Vertiefung & Ausblick Agents <span class="badge">Woche 7-8</span>',
+    s4_mod4_items: [
+      'Check-in & Vertiefung der Themen aus Woche 1-6',
+      'Offene Fragen klären, individuelle Nacharbeit',
+      'Ausblick: Einführung in AI Agents',
+      'Programmieren mit Agents als Perspektive',
+      'Orientierung: Wohin geht die Reise nach dem Programm?'
+    ],
+    // Slide 5
+    s5_title: 'AI & Excel - Woche 1 & 2',
+    s5_subtitle: 'Das Fundament: Excel-Workflows professionalisieren und mit AI verbinden.',
+    s5_f1_title: 'Woche 1: Setup + DCF-Template',
+    s5_f1_desc: 'Excel-Workflow einrichten, Claude Setup (alternativ Agent Mode). DCF-Template erstellen und validieren. Erste Schritte mit AI im Excel-Kontext.',
+    s5_f2_title: 'Woche 2: Best-Practice + 3-Way',
+    s5_f2_desc: 'Best-Practice-Struktur, Rules Tab, DCF-Regeln formalisieren. 3-Way Financial Model (GuV, Bilanz, Cashflow) mit eigenen Daten aufbauen.',
+    s5_h1_title: '🤔 Kernfrage in Woche 2',
+    s5_h1_desc: 'Wann übernehme ich manuell? Hier entwickeln die Teilnehmer einen eigenen Entscheidungsrahmen für den strategischen Umgang mit KI - kein blindes Automatisieren oder Vertrauen auf KI, sondern bewusstes Einsetzen.',
+    s5_h2_title: '🔄 Alternativ: Agent Mode',
+    s5_h2_desc: 'Im Programm wird primär mit Claude gearbeitet. Alternativ kann auch mit Agent Mode gefolgt werden. Jedes Tool hat dabei seine eigenen Vor- und Nachteile, wobei Claude in Excel derzeit mächtiger ist.',
+    // Slide 6
+    s6_title: 'Python - Woche 3 & 4',
+    s6_subtitle: 'Der Brückenschlag: Von Excel-Logik zu Python Pandas.',
+    s6_f1_title: 'Woche 3: Python Grundlagen',
+    s6_f1_desc: 'Übergang von Excel-Logik zu Python. Pandas Basics, DataFrames vs. Tabellen verstehen. Erste Schritte in Python.',
+    s6_f2_title: 'Woche 4: Python & Excel',
+    s6_f2_desc: 'Excel-Daten in Python laden und verarbeiten. Pandas-Workflows für Financial Data. Brücke: Excel-Formeln → Python-Funktionen.',
+    s6_h1_title: '🔑 Kein Python-Kurs von Null',
+    s6_h1_desc: 'Wir starten nicht bei "Hello World" - wir übersetzen Excel-Konzepte, mit denen du schon vertraut bist, direkt in Python. Zwei volle Wochen für einen soliden Übergang.',
+    // Slide 7
+    s7_title: 'Application - Woche 5 & 6',
+    s7_subtitle: 'Von Notebooks zur interaktiven App: Das Kernprogramm abschließen.',
+    s7_f1_title: 'Woche 5: Python Notebooks',
+    s7_f1_desc: 'DCF-Modell und 3-Way-Model als Python Notebook. Script-basierter Workflow mit Reproduzierbarkeit und Versionierung.',
+    s7_f2_title: 'Woche 6: Eigene Applikation',
+    s7_f2_desc: 'Python-Script in eine eigene, Framework-gestützte App überführen. Interaktive Oberfläche, Deployment-Grundlagen, eigene Mini-App.',
+    s7_h1_title: '🎓 Ergebnis nach Woche 6',
+    s7_h1_desc: 'Jeder Teilnehmer hat ein eigenes, interaktives Bewertungstool - gebaut mit den Werkzeugen aus den ersten 6 Wochen.',
+    // Slide 8
+    s8_tag: 'Woche 7 & 8',
+    s8_title: 'Check-in, Vertiefung & Ausblick Agents',
+    s8_subtitle: 'Stoff vertiefen, offene Fragen klären - und ein Ausblick auf die Arbeit mit AI Agents.',
+    s8_f1_title: 'Check-in & Vertiefung',
+    s8_f1_desc: 'Rückblick auf die Themen der Wochen 1-6. Offene Fragen klären, individuelle Nacharbeit, Vertiefung von Stoff der mehr Zeit benötigt.',
+    s8_f2_title: 'Ausblick: AI Agents',
+    s8_f2_desc: 'Einführung in AI Agents und Programmieren mit Agents. Ausblick auf Agent-basierte Workflows im Analyse-Alltag - wohin die Reise geht.',
+    s8_h1_title: '💡 Puffer + Ausblick',
+    s8_h1_desc: 'Woche 7-8 geben Raum für Vertiefung und Check-ins zum bisherigen Stoff. Gleichzeitig bekommst du einen Ausblick auf die Arbeit mit AI Agents - als Inspiration und Orientierung für die nächsten Schritte nach dem Programm.',
+    // Slide 9
+    s9_tag: 'Lernpfad', s9_title: 'Deine Progression über 8 Wochen',
+    s9_subtitle: 'Jede Woche baut auf der vorherigen auf - vom Setup bis zu AI Agents.',
+    s9_w1_week: 'Woche 1', s9_w1_title: 'AI & Excel: Setup + DCF', s9_w1_desc: 'Grundlagen legen, Tools einrichten',
+    s9_w2_week: 'Woche 2', s9_w2_title: 'AI & Excel: Best-Practice + 3-Way', s9_w2_desc: 'Qualität sichern, eigene Daten, Regeln formalisieren',
+    s9_w3_week: 'Woche 3', s9_w3_title: 'Python Grundlagen', s9_w3_desc: 'Brücke Excel-Python, Pandas, DataFrames, erste Schritte',
+    s9_w4_week: 'Woche 4', s9_w4_title: 'Python & Excel', s9_w4_desc: 'Daten laden, verarbeiten, Formeln übersetzen',
+    s9_w5_week: 'Woche 5', s9_w5_title: 'Python Notebooks', s9_w5_desc: 'Modelle in Notebooks, Versionierung',
+    s9_w6_week: 'Woche 6', s9_w6_title: 'Eigene Applikation', s9_w6_desc: 'Eigene interaktive App bauen & deployen',
+    s9_w7_week: 'Woche 7', s9_w7_title: 'Check-in & Vertiefung', s9_w7_desc: 'Stoff vertiefen, offene Fragen klären',
+    s9_w8_week: 'Woche 8', s9_w8_title: 'Ausblick: AI Agents', s9_w8_desc: 'Einführung Agents, Orientierung für danach',
+    // Slide 10
+    s10_tag: 'Nächste Schritte', s10_title: 'Interesse geweckt?',
+    s10_subtitle: 'Schau dir an, was mit diesen Werkzeugen und Workflows möglich ist - und melde dich bei uns.',
+    s10_demo_title: 'Demo ansehen',
+    s10_demo_desc: 'Wirf einen Blick auf unsere eigene KMU-Bewertungsapplikation - ein Beispiel dafür, was mit diesen Workflows möglich ist.',
+    s10_demo_btn: 'Demo ansehen →',
+    s10_demo_hint: 'Hinweis: Sprachwechsel, Hilfsdaten und mehr im Hamburger-Menu.',
+    s10_contact_title: 'Kontakt aufnehmen',
+    s10_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6. Stock<br>20097 Hamburg<br><br>Telefon: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobil: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>E-Mail: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s10_cta_title: 'Wir halten Schritt.',
+    s10_cta_desc: 'AI entwickelt sich täglich weiter - und wir mit. Deshalb behalten wir uns kurzfristige Änderungen oder Schwerpunktverschiebungen im Programm vor. Der generelle Inhalt und die Lernziele bleiben selbstverständlich erhalten.',
+  },
+  en: {
+    // Nav
+    nav1: 'Overview', nav2: 'Why This Program?', nav3: 'At a Glance',
+    nav4: 'Curriculum', nav5: 'Module 1: AI & Excel', nav6: 'Module 2: Python',
+    nav7: 'Module 3: Application', nav8: 'Week 7-8: Deep Dive',
+    nav9: 'Learning Path', nav10: 'Next Steps',
+    // Slide 1
+    s1_tag: 'Cohort-Based Program',
+    s1_subtitle: 'From AI-powered Excel through Python to custom framework-based applications - become an AI-powered analyst in 8 weeks. A hands-on cohort program by Morgenwert.',
+    s1_stat1: 'Weeks', s1_stat2: 'Modules', s1_stat3: 'Cohort',
+    // Slide 2
+    s2_tag: 'The Problem', s2_title: 'Why This Program?',
+    s2_subtitle: 'Financial analysts are at a turning point: AI is fundamentally changing how we work. The question is not whether to use it, but how to use it effectively.',
+    s2_f1_title: 'Excel Meets AI',
+    s2_f1_desc: 'Claude as a co-pilot directly in your Excel workflow - not as a replacement, but as an amplifier. Alternatively available with Agent Mode.',
+    s2_f2_title: 'Strategy Over Hype',
+    s2_f2_desc: 'When do I use AI, when do I stay manual? Clear decision frameworks instead of buzzwords.',
+    s2_f3_title: 'Excel → Python Bridge',
+    s2_f3_desc: 'The smooth transition: translating Excel concepts into Python without starting from scratch.',
+    s2_f4_title: 'Build Your Own App',
+    s2_f4_desc: 'By the end, you\'ll have your own application - your interactive valuation tool.',
+    // Slide 3
+    s3_tag: 'At a Glance', s3_title: 'The Program in Numbers',
+    s3_stat1: 'Weeks Duration', s3_stat2: 'Workshop Modules', s3_stat3: 'AI-Related Topic Areas',
+    s3_h1_title: '💡 Cohort Format',
+    s3_h1_desc: 'Rolling cohorts with fixed groups - start together, learn together. Each cohort kicks off with an intro session and then runs for 8 structured weeks through all 4 modules.',
+    s3_h2_title: '🎯 Target Audience',
+    s3_h2_desc: 'Financial analysts, controllers, management consultants, and anyone working with financial data who wants to take their workflows to the next level with AI and Python.',
+    // Slide 4
+    s4_title: '4 Modules, 8 Weeks, 1 Goal',
+    s4_subtitle: 'From AI-powered Excel setup through Python to AI agents.',
+    s4_tab1: 'Module 1: AI & Excel', s4_tab2: 'Module 2: Python',
+    s4_tab3: 'Module 3: Application', s4_tab4: 'Module 4: Agents',
+    s4_mod1_title: 'Module 1 - AI & Excel <span class="badge">Week 1-2</span>',
+    s4_mod1_items: [
+      'Excel workflow + Claude setup (alternatively Agent Mode)',
+      'DCF template, table validation, formulas',
+      'Best-practice structure, rules tab, quality assurance',
+      '3-way financial model with your own data',
+      'Strategy: When AI, when manual?'
+    ],
+    s4_mod2_title: 'Module 2 - Python <span class="badge">Week 3-4</span>',
+    s4_mod2_items: [
+      'Python fundamentals (Pandas, DataFrames)',
+      'Excel concepts → Python transition',
+      'Loading and processing Excel data in Python',
+      'Pandas workflows for financial data',
+      'Bridge: Excel formulas → Python functions'
+    ],
+    s4_mod3_title: 'Module 3 - Application <span class="badge">Week 5-6</span>',
+    s4_mod3_items: [
+      'DCF / 3-way model as Python notebook',
+      'Script-based workflow, version control',
+      'Python script → Custom application (framework-based)',
+      'Interactive interface for valuation model',
+      'Capstone project: Your own mini-app'
+    ],
+    s4_mod4_title: 'Week 7-8 - Check-in, Deep Dive & Agents Outlook <span class="badge">Week 7-8</span>',
+    s4_mod4_items: [
+      'Check-in & deep dive on topics from weeks 1-6',
+      'Address open questions, individual follow-up',
+      'Outlook: Introduction to AI agents',
+      'Programming with agents as a perspective',
+      'Orientation: Where does the journey go after the program?'
+    ],
+    // Slide 5
+    s5_title: 'AI & Excel - Week 1 & 2',
+    s5_subtitle: 'The foundation: professionalizing Excel workflows and connecting them with AI.',
+    s5_f1_title: 'Week 1: Setup + DCF Template',
+    s5_f1_desc: 'Set up your Excel workflow, Claude setup (alternatively Agent Mode). Create and validate a DCF template. First steps with AI in the Excel context.',
+    s5_f2_title: 'Week 2: Best Practice + 3-Way',
+    s5_f2_desc: 'Best-practice structure, rules tab, formalize DCF rules. Build a 3-way financial model (P&L, balance sheet, cash flow) with your own data.',
+    s5_h1_title: '🤔 Key Question in Week 2',
+    s5_h1_desc: 'When do I take over manually? Here, participants develop their own decision framework for the strategic use of AI - no blind automation or blind trust in AI, but conscious deployment.',
+    s5_h2_title: '🔄 Alternative: Agent Mode',
+    s5_h2_desc: 'The program primarily uses Claude. Alternatively, you can follow along with Agent Mode. Each tool has its own strengths and weaknesses, though Claude is currently more powerful in Excel.',
+    // Slide 6
+    s6_title: 'Python - Week 3 & 4',
+    s6_subtitle: 'Building the bridge: From Excel logic to Python Pandas.',
+    s6_f1_title: 'Week 3: Python Fundamentals',
+    s6_f1_desc: 'Transition from Excel logic to Python. Pandas basics, understanding DataFrames vs. tables. First steps in Python.',
+    s6_f2_title: 'Week 4: Python & Excel',
+    s6_f2_desc: 'Loading and processing Excel data in Python. Pandas workflows for financial data. Bridge: Excel formulas → Python functions.',
+    s6_h1_title: '🔑 Not a Python Course From Scratch',
+    s6_h1_desc: 'We don\'t start at "Hello World" - we translate Excel concepts you\'re already familiar with directly into Python. Two full weeks for a solid transition.',
+    // Slide 7
+    s7_title: 'Application - Week 5 & 6',
+    s7_subtitle: 'From notebooks to interactive apps: completing the core program.',
+    s7_f1_title: 'Week 5: Python Notebooks',
+    s7_f1_desc: 'DCF model and 3-way model as Python notebook. Script-based workflow with reproducibility and version control.',
+    s7_f2_title: 'Week 6: Your Own Application',
+    s7_f2_desc: 'Convert your Python script into a custom, framework-based app. Interactive interface, deployment basics, your own mini-app.',
+    s7_h1_title: '🎓 Result After Week 6',
+    s7_h1_desc: 'Every participant has their own interactive valuation tool - built with the tools from the first 6 weeks.',
+    // Slide 8
+    s8_tag: 'Week 7 & 8',
+    s8_title: 'Check-in, Deep Dive & Agents Outlook',
+    s8_subtitle: 'Deepen material, address open questions - and a look ahead at working with AI agents.',
+    s8_f1_title: 'Check-in & Deep Dive',
+    s8_f1_desc: 'Review of topics from weeks 1-6. Address open questions, individual follow-up, deeper work on material that needs more time.',
+    s8_f2_title: 'Outlook: AI Agents',
+    s8_f2_desc: 'Introduction to AI agents and programming with agents. A look at agent-based workflows in day-to-day analysis - where the journey is heading.',
+    s8_h1_title: '💡 Buffer + Outlook',
+    s8_h1_desc: 'Weeks 7-8 provide space for deepening and check-ins on previous material. At the same time, you get a preview of working with AI agents - as inspiration and orientation for the next steps after the program.',
+    // Slide 9
+    s9_tag: 'Learning Path', s9_title: 'Your Progression Over 8 Weeks',
+    s9_subtitle: 'Each week builds on the previous one - from setup to AI agents.',
+    s9_w1_week: 'Week 1', s9_w1_title: 'AI & Excel: Setup + DCF', s9_w1_desc: 'Lay the groundwork, set up tools',
+    s9_w2_week: 'Week 2', s9_w2_title: 'AI & Excel: Best Practice + 3-Way', s9_w2_desc: 'Quality assurance, own data, formalize rules',
+    s9_w3_week: 'Week 3', s9_w3_title: 'Python Fundamentals', s9_w3_desc: 'Excel-Python bridge, Pandas, DataFrames, first steps',
+    s9_w4_week: 'Week 4', s9_w4_title: 'Python & Excel', s9_w4_desc: 'Load data, process, translate formulas',
+    s9_w5_week: 'Week 5', s9_w5_title: 'Python Notebooks', s9_w5_desc: 'Models in notebooks, version control',
+    s9_w6_week: 'Week 6', s9_w6_title: 'Your Own Application', s9_w6_desc: 'Build & deploy your interactive app',
+    s9_w7_week: 'Week 7', s9_w7_title: 'Check-in & Deep Dive', s9_w7_desc: 'Deepen material, address open questions',
+    s9_w8_week: 'Week 8', s9_w8_title: 'Outlook: AI Agents', s9_w8_desc: 'Introduction to agents, orientation for what comes next',
+    // Slide 10
+    s10_tag: 'Next Steps', s10_title: 'Interested?',
+    s10_subtitle: 'See what\'s possible with these tools and workflows - and get in touch with us.',
+    s10_demo_title: 'View Demo',
+    s10_demo_desc: 'Take a look at our own SME valuation application - an example of what\'s possible with these workflows.',
+    s10_demo_btn: 'View Demo →',
+    s10_demo_hint: 'Note: Language switch, sample data, and more in the hamburger menu.',
+    s10_contact_title: 'Get in Touch',
+    s10_contact_info: '<strong>Morgenwert Valuation & Advisory GmbH</strong><br>Beim Strohhause 27, 6th Floor<br>20097 Hamburg, Germany<br><br>Phone: <a href="tel:+494060814195" style="color: var(--accent-primary);">+49 40 6081 4195</a><br>Mobile: <a href="tel:+4917615159395" style="color: var(--accent-primary);">+49 176 1515 9395</a><br>Email: <a href="mailto:kontakt@morgenwert.de" style="color: var(--accent-primary);">kontakt@morgenwert.de</a>',
+    s10_cta_title: 'We Keep Pace.',
+    s10_cta_desc: 'AI evolves every day - and so do we. That\'s why we reserve the right to make short-term changes or shifts in emphasis within the program. The overall content and learning objectives will, of course, remain intact.',
+  }
+};
+
+let currentLang = 'de';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  // Update toggle buttons (both sidebar and mobile)
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  // Update simple text elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang][key] !== undefined) {
+      el.textContent = translations[lang][key];
+    }
+  });
+  // Update HTML elements (allow inner HTML)
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (translations[lang][key] !== undefined) {
+      el.innerHTML = translations[lang][key];
+    }
+  });
+  // Update list elements
+  document.querySelectorAll('[data-i18n-list]').forEach(ul => {
+    const key = ul.getAttribute('data-i18n-list');
+    if (translations[lang][key] !== undefined) {
+      ul.innerHTML = translations[lang][key].map(item => '<li>' + item + '</li>').join('');
+    }
+  });
+}
+
+// Initialize with German
+document.addEventListener('DOMContentLoaded', () => setLang('de'));
+
+// --- Original presentation JS ---
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-items a');
+const progressBar = document.getElementById('progressBar');
+const menuToggle = document.getElementById('menuToggle');
+const navSidebar = document.getElementById('navSidebar');
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+}
+function updateActiveNav() {
+    let current = '';
+    sections.forEach(section => {
+        if (section.getBoundingClientRect().top <= window.innerHeight * 0.4) current = section.id;
+    });
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+    });
+}
+window.addEventListener('scroll', () => { updateProgress(); updateActiveNav(); });
+window.addEventListener('load', () => { updateProgress(); updateActiveNav(); });
+menuToggle.addEventListener('click', () => navSidebar.classList.toggle('open'));
+navLinks.forEach(link => link.addEventListener('click', () => navSidebar.classList.remove('open')));
+document.addEventListener('keydown', e => {
+    const ids = Array.from(sections).map(s => s.id);
+    let current = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= window.innerHeight * 0.4) current = i; });
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowRight') && current < ids.length - 1) {
+        e.preventDefault(); document.getElementById(ids[current + 1]).scrollIntoView({ behavior: 'smooth' });
+    }
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && current > 0) {
+        e.preventDefault(); document.getElementById(ids[current - 1]).scrollIntoView({ behavior: 'smooth' });
+    }
+});
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tabGroup = btn.closest('.tabs');
+        tabGroup.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        tabGroup.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+});
+</script>
+</body>
+</html>
